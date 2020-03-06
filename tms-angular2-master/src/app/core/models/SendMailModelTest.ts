@@ -1,0 +1,22 @@
+export class SendMailModelTest {
+    public toEmail: string[];
+    public ccMail: string[];
+    public Title: string;
+    public Action:string;
+    public CreateBy: string;
+    public EmailType: string;
+    public EmailSubject:string;
+    public ReasonReject:string;
+    public Category:string;
+    constructor(Title: string, CreateBy: string,toEmail:string[],ccMail:string[],Action:string,EmailType:string,EmailSubject:string,ReasonReject:string,Category:string) {
+        this.Title = Title;
+        this.CreateBy = CreateBy;
+        this.toEmail = toEmail;
+        this.ccMail = ccMail;
+        this.Action = Action;
+        this.EmailType = EmailType;
+        this.EmailSubject = EmailSubject;
+        this.ReasonReject = ReasonReject;
+        this.Category = Category;
+    }
+}

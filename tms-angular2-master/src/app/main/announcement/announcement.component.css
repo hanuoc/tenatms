@@ -1,0 +1,18 @@
+/* Table*/
+table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  th, td {
+    overflow-x: auto;
+    white-space: nowrap;
+    word-break: break-all;
+    max-width: 400px;
+    text-overflow: ellipsis;
+    text-align: left;
+    padding: 8px;
+    overflow:hidden;
+  }
+  tr:nth-child(even){background-color: #f9f9f9}
+  

@@ -1,0 +1,120 @@
+textarea {
+    resize: vertical;
+  }
+  .btn-explain{
+    margin-top: 0px!important; 
+    margin-bottom: 0px!important;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  th, td {
+    overflow-x: auto;
+    white-space: nowrap;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    text-align: left;
+    padding: 8px;
+    overflow:hidden;
+  }
+  .label-radio{
+    margin-top: -8px;
+  }
+  @media only screen and (max-width: 1370px) {
+  .table td:nth-of-type(1) {width: 180px; min-width: 180px; max-width: 180px;}
+  .table td:nth-of-type(2) {width: 110px; min-width: 110px; max-width: 110px;}
+  .table td:nth-of-type(3) {width: 100px; min-width: 100px; max-width: 100px;}
+  .table td:nth-of-type(4) {width: 200px; min-width: 200px; max-width: 200px;}
+  .table td:nth-of-type(5) {width: 170px; min-width: 170px; max-width: 170px;}
+  .table td:nth-of-type(6) {width: 100px; min-width: 100px; max-width: 100px;}
+  .table td:nth-of-type(7) {width: 100px; min-width: 100px; max-width: 100px;}
+  }
+  @media only screen and (min-width: 1370px) {
+    .table td:nth-of-type(1) {width: 180px; min-width: 180px; max-width: 180px;}
+    .table td:nth-of-type(2) {width: 110px; min-width: 110px; max-width: 110px;}
+    .table td:nth-of-type(3) {width: 100px; min-width: 100px; max-width: 100px;}
+    .table td:nth-of-type(4) {width: 225px; min-width: 225px; max-width: 225px;}
+    .table td:nth-of-type(5) {width: 225px; min-width: 225px; max-width: 225px;}
+    .table td:nth-of-type(6) {width: 100px; min-width: 100px; max-width: 100px;}
+    .table td:nth-of-type(7) {width: 100px; min-width: 100px; max-width: 100px;}
+    }
+  /* .table td:nth-of-type(3) {width: 130px; min-width: 130px; max-width: 130px;}
+  .table td:nth-of-type(4) {width: 150px; min-width: 150px; max-width: 150px;}
+  .table td:nth-of-type(5) {width: 110px; min-width: 110px; max-width: 110px;} */
+  /* .table td:nth-of-type(6) {width: 140px; min-width: 140px; max-width: 140px;}
+  .table td:nth-of-type(7) {width: 140px; min-width: 140px; max-width: 140px;} */
+  /* .table td:nth-of-type(8) {width: 78px; min-width:78px; max-width: 78px;} */
+
+  .colorRed{
+    color:red;
+  }
+  .fix-center{
+    vertical-align: middle;
+  }
+
+  .radio-check {
+    font-weight: lighter;
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default radio button */
+.radio-check input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Create a custom radio button */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.radio-check:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+
+/* When the radio button is checked, add a blue background */
+.radio-check input:checked ~ .checkmark {
+    background-color: white;
+    border:1px solid #cccccc;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.radio-check input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.radio-check .checkmark:after {
+ 	top: 5px;
+	left: 5px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: #555555;
+}

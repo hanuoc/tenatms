@@ -1,0 +1,125 @@
+.dropdown-menu{
+    overflow-y: scroll;
+    height: 200px;
+}
+.thead-table{
+    color:#777!important;
+}
+.w_left{
+    color:#73879C!important;
+}
+.hover:hover { 
+    color: #333 !important;
+    transition: 0.5s;
+}
+.w_right{
+    color:#73879C!important;
+}
+p{
+    color:#73879C!important;
+}
+.progress{
+    background-color: #AEC9D6;
+}
+.progress-bar{
+    color:black;
+    font-weight: bold;
+}
+@media only screen and (max-width: 1368px) {
+.tile-stats .count{
+    font-size: 20px;
+    color:#73879C!important;
+}
+.tile-stats .icon{
+    right: 12px;
+    top: -2px;
+}
+.tile-stats .icon i{
+    font-size: 30px;
+}
+.tile-stats h3{
+    font-size: 15px;
+    color:#BAB8B8;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.1;
+}
+.tile-stats p{
+    margin-left: 14px;
+    font-size: 16px;
+    color:#73879C!important;
+}
+.dashboard_graph .x_title h3{
+    font-size: 18px;
+    font-weight: 400;
+    color:#73879C!important;
+}
+.dashboard_graph .x_title h2 small{
+    margin-left: 10px;
+    color: #777;
+}
+
+.x_title h2{
+    font-size: 18px;
+    font-weight: 400;
+    color:#73879C!important;
+}
+.x_title h2 small{
+    margin-left: 10px;
+    color: #777;
+}
+table td p{
+    font-size: 11px;
+}
+}
+
+@media only screen and (min-width: 1368px) {
+    .tile-stats .count{
+        font-size: 38px;
+        color:#73879C!important;
+    }
+
+    .tile-stats .icon i{
+        font-size: 60px;
+    }
+    .tile-stats h3{
+        font-size: 24px;
+        color:#BAB8B8;
+        font-family: inherit;
+        font-weight: 500;
+        line-height: 1.1;
+    }
+    .tile-stats p{
+        margin-left: 14px;
+        font-size: 16px;
+        color:#73879C!important;
+    }
+    .dashboard_graph .x_title h3{
+        font-size: 18px;
+        font-weight: 400;
+        color:#73879C;
+    }
+    .dashboard_graph .x_title h2 small{
+        margin-left: 10px;
+        color: #777;
+    }
+
+    .x_title h2{
+        font-size: 18px;
+        font-weight: 400;
+        color:#73879C;
+    }
+    .x_title h2 small{
+        margin-left: 10px;
+        color: #777;
+    }
+}
+
+/* CSS Chart Abnormal */
+.parent{
+    cursor: pointer;
+}
+
+.scroll_y{
+    overflow-y: scroll;
+}

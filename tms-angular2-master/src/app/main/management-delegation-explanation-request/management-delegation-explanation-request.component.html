@@ -1,0 +1,73 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <h3>Delegation Management
+        <small>Delegation Explanation Request List</small>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div>
+      <div class="x_title">
+        <div class="clearfix"></div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table *ngIf="listDelegationExplanationRequest && listDelegationExplanationRequest.length > 0" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Reason Type</th>
+              <th>Creator</th>
+              <th>Delegated To</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <thead>
+            <tbody>
+              <tr *ngFor="let items of listDelegationExplanationRequest">
+                  <td>{{items.Title}}</td>
+                <td>
+                  <ul *ngFor="let reason of items.AbnormalReason; let i = index">
+                    <li *ngIf="i < items.AbnormalReason.length - 1">{{ reason.ReasonName }}, </li>
+                    <li *ngIf="i >= items.AbnormalReason.length - 1">{{ reason.ReasonName }}</li>
+                  </ul>
+                </td>
+                <td>{{items.User.FullName}}</td>
+                <td>{{items.Delegate.FullName}}</td>
+                <td>
+                  <button  *ngIf="!checkCancel(items)" class="btn btn-default btn-xs btn-danger" data-placement="top"
+                    title="Cancel" (click)="cancelRequest(items.ID,items.Title,items.Delegate)">
+                    <i class="fa fa-ban" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+        </table>
+      </div>
+      <div *ngIf="listDelegationExplanationRequest && listDelegationExplanationRequest.length == 0" class="col-md-12">
+        <div class="alert alert-info">
+            <strong>Notification!</strong> No data found in system
+        </div>
+      </div>
+      <div *ngIf="listDelegationExplanationRequest && listDelegationExplanationRequest.length > 0" class="col-md-6">
+        <pagination [boundaryLinks]="true" [maxSize]="pagingSize"  [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+          [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+      </div>
+      <div *ngIf="listDelegationExplanationRequest && listDelegationExplanationRequest.length > 0 && totalRow > 1" class="col-md-6" id="pageStyle"
+        style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+      </div>
+      <div *ngIf="listDelegationExplanationRequest && totalRow == 1" class="col-md-6" id="pageStyle"
+        style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+      </div>
+      
+    </div>
+  </div>
+</div>
+</div>

@@ -1,0 +1,121 @@
+<div class="top_nav">
+  <div class="nav_menu">
+    <nav class="" role="navigation">
+      <div class="nav toggle">
+        <a (click)="toggleClicked($event)" id="menu_toggle">
+          <i class="fa fa-bars"></i>
+        </a>
+      </div>
+
+      <ul class="nav navbar-nav navbar-right" *ngIf="user">
+        <li class="text-right">
+          <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            <img src="../../../assets/images/user.png" alt=""> {{user?.fullName}}
+            <span class=" fa fa-angle-down"></span>
+          </a>
+          <ul class="dropdown-menu dropdown-usermenu pull-right">
+            <li>
+              <a routerLink="user/detail">Profile</a>
+            </li>
+            <li>
+              <a (click)="showAdd()">Change Password</a>
+            </li>
+            <li>
+              <a href="#" (click)="logout()">
+                <i class="fa fa-sign-out pull-right"></i>Log out</a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- <li role="presentation" class="dropdown">
+          <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+            <i class="fa fa-envelope-o"></i>
+            <span class="badge bg-green" *ngIf="announcements && announcements.length>0">{{announcements.length}}</span>
+          </a>
+          <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
+            <li *ngFor="let item of announcements">
+              <a (click)="markAsRead(item.ID)">
+                <span class="image">
+                  <img [src]="baseFolder+item.AppUser.Avatar" height="30"  />
+                </span>
+                <span>
+                  <span>{{item.AppUser.FullName}}</span>
+                  <span class="time">{{item.CreatedDate}}</span>
+                </span>
+                <span class="message">
+                  {{item.Content}}
+                </span>
+              </a>
+            </li>
+            <li>
+              <div class="text-center">
+                <a routerLink="/main/announcement">
+                  <strong>See all notification</strong>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+              </div>
+            </li>
+          </ul>
+        </li> -->
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Popup Change Password -->
+<div bsModal #ChangePassword="bs-modal" class="modal fade" role="dialog" tabindex="-1" aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+  <form class="form-horizontal form-label-left input_mask" novalidate #addEditForm="ngForm" (ngSubmit)="saveChanges(addEditForm)"
+    *ngIf="entity">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title pull-left">Change Password</h4>
+          <button type="button" class="close pull-right" (click)="hideModal(ChangePassword)" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Old Password<span style="color:red">*</span>:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="password" id="password-old" #oldpass="ngModel" [(ngModel)]="password" name="oldpass" class="form-control" minlength="6" maxlength="16"
+                required >
+                <span toggle="#password-old" class="fa fa-fw fa-eye field-icon toggle-password"></span> 
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">New Password<span style="color:red">*</span>:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="password" id="password-new" #new="ngModel" [(ngModel)]="newPassword" name="new" class="form-control" minlength="8" maxlength="16"
+                required pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,16}$">
+                <span toggle="#password-new" class="fa fa-fw fa-eye field-icon toggle-password"></span> 
+              <small *ngIf="addEditForm.controls['new']?.hasError('pattern')" class="text-danger">
+                  Password should be 8 - 16 in length, contain at least one lower case, one numberic character, one special character!
+                </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Confirm Password<span style="color:red">*</span>:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="password"  id="password-confirm" #confirm="ngModel" [(ngModel)]="confirmPassword" validateEqual="new" minlength="8" maxlength="16"
+                name="confirm" class="form-control" required pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,16}$">
+                <span toggle="#password-confirm" class="fa fa-fw fa-eye field-icon toggle-password"></span> 
+              <small *ngIf="addEditForm.controls['confirm']?.hasError('pattern')" class="text-danger">
+                Password should be 8 - 16 in length, contain at least one lower case, one numberic character, one special character!
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+                <button type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid">Save</button>
+              <button  type="button" class="btn btn-primary" (click)="hideModal(ChangePassword)">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<!-- /Popup Change Password -->
+

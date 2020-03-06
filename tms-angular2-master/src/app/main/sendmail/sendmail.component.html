@@ -1,0 +1,177 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <h3>Human Resource
+        <small>Send Mail</small>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <form class="form-horizontal form-label-right" novalidate #sendMail="ngForm">
+      <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">To
+          <span style="color:red">*</span>:</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <textarea type="text" #email="ngModel" class="form-control toEmail" [(ngModel)]="listEmail" [disabled]="true" maxlength="500"
+            name="email"></textarea>
+        </div>
+        <div class="col-md-1 col-sm-1 col-xs-12 text-left">
+          <button type="button" class="btn btn-success btn-circle" title="Choose Member" (click)="showListMemberModal()">
+            <i class="fa fa-user"></i>
+          </button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">Subject
+          <span style="color:red">*</span>:</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <input type="text" #subject="ngModel" [(ngModel)]="entity.Subject" required maxlength="300" name="subject" class="form-control">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">Content
+          <span style="color:red">*</span>:</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <app-simple-tiny [elementId]="'my-editor-id'" [content]="entity.Content" (onEditorKeyup)="keyupHandlerContentFunction($event)"
+            (change)="changeText($event)">
+          </app-simple-tiny>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">File
+          <span style="color:red"></span>:</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <input type="file" #file name="file" multiple="multiple" class="form-control" (change)="multiFileEvent($event)">
+          <p class="help-block label label-danger">support file *.txt, *.docx, *.xlsx, *.pdf, *.rar, *.jpg, *.png, *.gif</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-md-2 col-sm-2 col-xs-12">
+          <span style="color:red"></span>
+        </label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+          <div *ngIf="filesToUpload?.length > 0">
+            <br />
+            <p>{{filesToUpload?.length}} files selected : </p>
+          </div>
+          <ul>
+            <li *ngFor="let fileName of selectedFileNames; let i = index">
+              {{fileName}}
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-2 col-sm-2 col-xs-12 col-md-offset-2">
+          <input type="button" class="btn btn-primary" value="Send" [disabled]="isLoadingData" (click)="SendMail(sendMail)">
+          <img *ngIf="isLoadingData" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+          />
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!--Modal list member-->
+<div bsModal #listMember="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Member List</h4>
+        <button type="button" class="close pull-right" (click)="closeForm(listMember)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="form-horizontal form-label-left">
+          <div class="clearfix"></div>
+          <div class="row">
+            <div class="form-group">
+              <div class="col-md-3 col-sm-12 col-xs-12">
+                <div class="input-group">
+                  <input type="text" class="form-control" name="search" (keyup.enter)="GetListMember()" [(ngModel)]="search" placeholder="Account...">
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" (click)="GetListMember()">
+                      <span class="glyphicon glyphicon-search"></span>
+                    </button>
+                  </span>
+                </div>
+              </div>
+              <div class="col-md-2 col-sm-12 col-xs-12">
+                <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="GroupFilterDropdownTexts" [settings]="GroupFilterSettings"
+                  [options]="groupOption" [(ngModel)]="groupFilter"></ss-multiselect-dropdown>
+              </div>
+              <div class="col-md-4 col-sm-12 col-xs-12">
+                <button type="button" class="btn btn-info btn-circle" title="Filter" (click)="filterByGroup()">
+                  <i class="fa fa-filter"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="reset()">
+                  <i class="fa fa-undo"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div style="overflow-x:auto;">
+              <table *ngIf="users && users.length > 0" class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>
+                      <input type="checkbox" name="checkRequest" id="checkboxID" [checked]="isAllChecked()" (change)="checkAll($event,isAllChecked())">
+                    </th>
+                    <th>Full Name</th>
+                    <th>Account</th>
+                    <th>Group</th>
+                    <th>Gender</th>
+                    <th>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let user of users">
+                    <td>
+                      <input type="checkbox" [(ngModel)]="user.Checked" [name]="user.ID" (change)="checkBoxList(user,user.Checked)" [ngModelOptions]="{standalone: true}">
+                    </td>
+                    <td>{{user.FullName}}</td>
+                    <td>{{user.UserName}}</td>
+                    <td>{{user.Group?.Name}}</td>
+                    <td>{{user.Gender == 'True' ? 'Male' : 'Female'}}</td>
+                    <td>{{user.Email}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div *ngIf="users && users.length == 0" class="col-md-12">
+              <div class="alert alert-info">
+                <strong>Notification!</strong> No data found in system
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div *ngIf="users && users.length > 0" class="col-md-6">
+              <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+                [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+                lastText="&raquo;"></pagination>
+            </div>
+            <div *ngIf="users && users.length > 0 && totalRow > 1" class="col-md-6 showPage" style="text-align: right">
+              <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+            </div>
+            <div *ngIf="users && totalRow == 1" class="col-md-6 showPage" style="text-align: right">
+              <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+              <button type="submit" (click)="hideModal(listMember)" class="btn btn-success">Ok</button>
+              <button type="button" type="button" (click)="closeForm(listMember)" class="btn btn-circle">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

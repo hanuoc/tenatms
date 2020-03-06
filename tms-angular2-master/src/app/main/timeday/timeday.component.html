@@ -1,0 +1,122 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <h3>Time Day Management
+        <small>Time Day List</small>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="clearfix"></div>
+    <div class="x_panel">
+      <div class="">
+        <div class="row">
+          <div class="form-group">
+            <div class="col-md-2 col-sm-6 col-xs-12 form-group">
+            </div>
+            <div class="col-md-2 col-sm-6 col-xs-12 form-group">
+            </div>
+            <div class="col-md-2 col-sm-6 col-xs-12 form-group">
+            </div>
+            <div class="col-md-3 col-sm-12 col-xs-12 form-group">
+            </div>
+            <div class="col-md-3 col-sm-12 col-xs-12" style="text-align :right">
+              <button type="button" *ngIf="!isSA" class="btn btn-success btn-circle" title="Create" (click)="showAddModal()">
+                <i class="fa fa-plus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="x_title">
+          <div class="clearfix"></div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Day of Week</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+                <th *ngIf="!isSA">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of timedaylist">
+                <td>{{item.Workingday}}</td>
+                <td>{{item.CheckIn}} AM</td>
+                <td>{{item.CheckOut}} PM</td>
+                <td *ngIf="!isSA">
+                  <button class="btn btn-default btn-xs btn-primary" title="Edit" (click)="showEditModal(item.ID)">
+                    <i class="fa fa-pencil-square-o" aria-hidden="true" style="color:white"></i>
+                  </button>
+                  <button class="btn btn-default btn-xs btn-danger" title="Delete" (click)="delete(item.ID)">
+                    <i class="fa fa-trash" aria-hidden="true" style="color:white"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Show modal -->
+<!--Modal add and edit-->
+<div bsModal #modalAddEdit="bs-modal" [config]="{'backdrop':'static', 'keyboard': false}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left" *ngIf="!isCreate">Update Time Day</h4>
+        <h4 class="modal-title pull-left" *ngIf="isCreate">Create Time Day</h4>
+        <button type="button" class="close pull-right" (click)="hideModal(addEditForm)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #addEditForm="ngForm" (ngSubmit)="saveData(addEditForm)" *ngIf="entity">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Day of Week
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" #Workingday="ngModel" [(ngModel)]="entity.Workingday" required minlength="4" maxlength="20" name="Workingday"
+                class="form-control">
+              <small *ngIf="addEditForm.controls['Workingday']?.hasError('minlength')" class="text-danger">
+                Day Of Week should be between 4 to 20 characters.
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Check In
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <!-- <input type="time" name="CheckIn" #CheckIn="ngModel" (click)="open(1)" [(ngModel)]="entity.CheckIn"  [ngModelOptions]="{standalone: true}" pattern="[0-9]{1,2}:[0-9]{1,2}:[AaMmpPmM]{1,2}$"> -->
+              <input class="form-control" type="time" #CheckIn="ngModel" required [(ngModel)]="entity.CheckIn" pattern="[0-9]{1,2}:[0-9]{1,2}"
+                name="CheckIn">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Check Out
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" type="time" #CheckOut="ngModel" required [(ngModel)]="entity.CheckOut" pattern="[0-9]{1,2}:[0-9]{1,2}"
+                name="CheckOut">
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2">
+              <button type="submit" *ngIf="isCreate" class="btn btn-success" [disabled]="!addEditForm.form.valid || entity.CheckIn?.lenght<6 || entity.CheckOut?.lenght<6">Add</button>
+              <button type="submit" *ngIf="!isCreate" class="btn btn-success" [disabled]="!addEditForm.form.valid || entity.CheckIn?.lenght<6 || entity.CheckOut?.lenght<6">Update</button>
+              <button type="button" (click)="resetForm(addEditForm)" class="btn btn-primary">Reset</button>
+              <button type="button" type="button" (click)="hideModal(addEditForm)" class="btn btn-circle">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

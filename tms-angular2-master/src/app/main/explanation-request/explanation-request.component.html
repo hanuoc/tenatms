@@ -1,0 +1,623 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-md-6 col-sm-6 col-xs-12">
+      <h3>Explanation Management
+        <small>Explanation List</small>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="clearfix"></div>
+    <div class="x_panel">
+      <div class="">
+        <div class="row">
+          <div *ngIf="!hasPermission('EXPLANATION_LIST','readAll') && !hasPermission('EXPLANATION_LIST','readAdmin')" class="form-group">
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [settings]="dropdownSettings" [options]="statusFilterOptions" [texts]="statusDropdownTexts" [(ngModel)]="chosenStatusFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [settings]="dropdownSettings" [options]="reasonFilterOptions" [texts]="reasonDropdownTexts" [(ngModel)]="chosenReasonFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-3 col-sm-12 col-xs-12 divfixdatetimepicker">
+              <div class="input-group" daterangepicker [options]="daterangepickerOptions" (selected)="selectedDateRangePicker($event, chosenDate)">
+                <span class="form-control uneditable-input" name="daterange">
+                  {{ chosenDate.start | date:'dd/MM/yyyy' }} - {{ chosenDate.end| date:'dd/MM/yyyy' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+            <div class="col-md-5 col-sm-12 col-xs-12 divfixbutton">
+              <button type="button" class="btn btn-info btn-circle" (click)="filter()" title="Filter">
+                <i class="fa fa-filter"></i>
+              </button>
+              <button type="button" class="btn btn-primary btn-circle" (click)="reset()" title="Reset">
+                <i class="fa fa-undo"></i>
+              </button>
+            </div>
+          </div>
+          <!-- Show If Permission is GroupLead -->
+          <div *ngIf="hasPermission('EXPLANATION_LIST','readAll') &&  !_authenService.hasPermission('EXPLANATION_LIST','caseRoleSuperAdmin')" class="form-group">
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput" *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll') && !_authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin')">
+              <ss-multiselect-dropdown [settings]="dropdownSearchSettings" [options]="creatorFilterOptions" [texts]="creatorDropdownTexts"
+                [(ngModel)]="chosenCreatorFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [settings]="dropdownSettings" [options]="statusFilterOptions" [texts]="statusDropdownTexts" [(ngModel)]="chosenStatusFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [settings]="dropdownSettings" [options]="reasonFilterOptions" [texts]="reasonDropdownTexts" [(ngModel)]="chosenReasonFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-3 col-sm-12 col-xs-12 divfixdatetimepicker">
+              <div class="input-group" daterangepicker [options]="daterangepickerOptions" (selected)="selectedDateRangePicker($event, chosenDate)">
+                <span class="form-control uneditable-input" name="daterange">
+                  {{ chosenDate.start | date:'dd/MM/yyyy' }} - {{ chosenDate.end| date:'dd/MM/yyyy' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-12 col-xs-12 divfixbutton">
+              <button type="button" class="btn btn-info btn-circle" (click)="filter()" title="Filter">
+                <i class="fa fa-filter"></i>
+              </button>
+              <button type="button" class="btn btn-primary btn-circle" (click)="reset()" title="Reset">
+                <i class="fa fa-undo"></i>
+              </button>
+              <button class="btn btn-primary btn-circle" [disabled]="!approveChecked" title="Approve Selected" (click)="approveSelectedExplanation()">
+                <i class="fa fa-check" aria-hidden="true"></i>
+              </button>
+              <button class="btn btn-danger btn-circle" [disabled]="!rejectChecked" title="Reject Selected" (click)="rejectSelectedExplanationConfirm()">
+                <i class="fa fa-times" aria-hidden="true"></i>
+              </button>
+              <button class="btn btn-success btn-circle" [disabled]="!delegateChecked" title="Delegate Selected" (click)="showDelegateConfirm(undefined, 2)"
+                *ngIf="_authenService.hasPermission('DELEGATION_EXPLANATION_REQUEST_MANAGEMENT','readAll')">
+                <i class="fa fa-user" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Show If Permission is Super Admin -->
+          <div *ngIf="_authenService.hasPermission('EXPLANATION_LIST','caseRoleSuperAdmin') || _authenService.hasPermission('EXPLANATION_LIST','readAdmin')" class="form-group">
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput" >
+              <ss-multiselect-dropdown [settings]="dropdownSearchSettings" [options]="creatorFilterOptionsSuperAdmin" [texts]="creatorDropdownTexts"
+                [(ngModel)]="chosenCreatorFilterSuperAdmin"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [settings]="dropdownSettings" [options]="statusFilterOptions" [texts]="statusDropdownTexts" [(ngModel)]="chosenStatusFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [settings]="dropdownSettings" [options]="reasonFilterOptions" [texts]="reasonDropdownTexts" [(ngModel)]="chosenReasonFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-3 col-sm-12 col-xs-12 divfixdatetimepicker">
+              <div class="input-group" daterangepicker [options]="picker" (selected)="selectedDateRangePicker($event, chosenDate)">
+                <span class="form-control uneditable-input" name="daterange">
+                  {{ chosenDate.start | date:'dd/MM/yyyy' }} - {{ chosenDate.end| date:'dd/MM/yyyy' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-12 col-xs-12 divfixbutton">
+              <button type="button" class="btn btn-info btn-circle" (click)="filter()" title="Filter">
+                <i class="fa fa-filter"></i>
+              </button>
+              <button type="button" class="btn btn-primary btn-circle" (click)="reset()" title="Reset">
+                <i class="fa fa-undo"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+        <div class="x_title">
+          <div class="clearfix"></div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table *ngIf="explanations && explanations.length > 0 && !hasPermission('EXPLANATION_LIST','readAll') && !_authenService.hasPermission('EXPLANATION_LIST','caseRoleSuperAdmin') && !_authenService.hasPermission('EXPLANATION_LIST','readAdmin') " class="table table-bordered memberTable">
+            <thead>
+              <tr>
+                <th (click)="sort('Title')">Title
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'Title', 
+                'fa-sort-asc': (column == 'Title' && isDesc), 
+                'fa-sort-desc': (column == 'Title' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th *ngIf="hasPermission('EXPLANATION_LIST','readAll')">Full Name</th>
+                <th *ngIf="hasPermission('EXPLANATION_LIST','readAll')">Group</th>
+                <th>Reason Type</th>
+                <th (click)="sort('CreatedDate')">Created Date
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'CreatedDate', 
+                'fa-sort-asc': (column == 'CreatedDate' && isDesc), 
+                'fa-sort-desc': (column == 'CreatedDate' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th id="explanation-date">Explanation Date</th>
+                <th>Status Type</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of explanations">
+                <td class="titleModal">
+                  <a (click)="showDetail(item.ID)">{{item.Title}}</a>
+                </td>
+                <td *ngIf="hasPermission('EXPLANATION_LIST','readAll')">{{item.User.FullName}}
+                </td>
+                <td *ngIf="hasPermission('EXPLANATION_LIST','readAll')">{{item.User.Group.Name}}</td>
+                <td>
+                  <ul *ngFor="let reason of item.AbnormalReason; let i = index">
+                    <li *ngIf="i < item.AbnormalReason.length - 1">{{ reason.ReasonName }}, </li>
+                    <li *ngIf="i >= item.AbnormalReason.length - 1">{{ reason.ReasonName }}</li>
+                  </ul>
+                </td>
+                <td>{{item.CreatedDate | date: 'dd/MM/yyyy'}}</td>
+                <td>{{item.ExplanationDate | date: 'dd/MM/yyyy'}}</td>
+                <td>{{item.StatusRequest.Name}}</td>
+                <td>
+                  <button class="remove-margin btn btn-danger btn-xs" title="Cancel" *ngIf="hasPermission('EXPLANATION_LIST','cancel') && checkCanCel(item)"
+                    (click)="cancelExplanation(item.ID)">
+                    <i class="fa fa-ban" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <table *ngIf="explanations && explanations.length > 0 && hasPermission('EXPLANATION_LIST','readAll') && !_authenService.hasPermission('EXPLANATION_LIST','caseRoleSuperAdmin')  && !_authenService.hasPermission('EXPLANATION_LIST','readAdmin')" class="table table-bordered ">
+            <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" name="all" [checked]="isAllChecked()&&isGreater0" (change)="checkAll($event)">
+                </th>
+                <th (click)="sort('Title')">Title
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'Title', 
+                'fa-sort-asc': (column == 'Title' && isDesc), 
+                'fa-sort-desc': (column == 'Title' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th (click)="sort('CreatedBy')">Created By
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'CreatedBy', 
+                  'fa-sort-asc': (column == 'CreatedBy' && isDesc), 
+                  'fa-sort-desc': (column == 'CreatedBy' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th (click)="sort('CreatedDate')">Created Date
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'CreatedDate', 
+                  'fa-sort-asc': (column == 'CreatedDate' && isDesc), 
+                  'fa-sort-desc': (column == 'CreatedDate' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th>Explanation Date</th>
+                <th>Reason Type</th>
+                <th>Status Type</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of explanations">
+                <td>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" [(ngModel)]="item.Checked" [disabled]="!checkApprove(item) && !checkReject(item)" (change)="checkBoxList($event,item)"
+                        [name]="item.ID" [ngModelOptions]="{standalone: true}">
+                    </label>
+                  </div>
+                </td>
+                <td class="titleModal">
+                  <a (click)="showDetail(item.ID)">{{item.Title}}</a>
+                </td>
+                <td>{{item.User.FullName}}</td>
+                <td>{{item.CreatedDate | date: 'dd/MM/yyyy'}}</td>
+                <td>{{item.ExplanationDate | date: 'dd/MM/yyyy'}}</td>
+                <td>
+                  <div *ngFor="let reason of item.AbnormalReason; let i = index">
+                    <span *ngIf="i < item.AbnormalReason.length - 1">{{ reason.ReasonName }}, </span>
+                    <span *ngIf="i >= item.AbnormalReason.length - 1">{{ reason.ReasonName }}</span>
+                  </div>
+                </td>
+                <td>{{item.StatusRequest.Name}}</td>
+                <td>
+                  <button class="remove-margin btn btn-danger btn-xs" *ngIf="hasPermission('EXPLANATION_LIST','readAll') && checkCanCel(item)"
+                    title="Cancel" (click)="cancelExplanation(item.ID)">
+                    <i class="fa fa-ban" aria-hidden="true"></i>
+                  </button>
+                  <button class="remove-margin btn btn-primary btn-xs" *ngIf="hasPermission('EXPLANATION_LIST','readAll') && checkApprove(item)"
+                    title="Approve" (click)="approveExplanation(item.ID,item.Title,item.User)">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                  </button>
+                  <button class="remove-margin btn btn-danger btn-xs" *ngIf="hasPermission('EXPLANATION_LIST','readAll') && checkReject(item)"
+                    title="Reject" (click)="rejectExplanation(item)">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                  </button>
+                  <button class="remove-margin btn btn-success btn-xs" *ngIf="_authenService.hasPermission('DELEGATION_EXPLANATION_REQUEST_MANAGEMENT','readAll') && checkDelegate(item)"
+                    title="Delegate" (click)="showDelegateConfirm(item, '1')">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Show if permisstion is super admin -->
+          <table *ngIf="explanationsSuperAdmin && explanationsSuperAdmin.length > 0  && (_authenService.hasPermission('EXPLANATION_LIST','caseRoleSuperAdmin') || _authenService.hasPermission('EXPLANATION_LIST','readAdmin') )" class="table table-bordered superAdminTable">
+            <thead>
+              <tr>
+                
+                <th (click)="sort('Title')">Title
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'Title', 
+                'fa-sort-asc': (column == 'Title' && isDesc), 
+                'fa-sort-desc': (column == 'Title' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th (click)="sort('CreatedBy')">Created By
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'CreatedBy', 
+                  'fa-sort-asc': (column == 'CreatedBy' && isDesc), 
+                  'fa-sort-desc': (column == 'CreatedBy' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th (click)="sort('CreatedDate')">Created Date
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'CreatedDate', 
+                  'fa-sort-asc': (column == 'CreatedDate' && isDesc), 
+                  'fa-sort-desc': (column == 'CreatedDate' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th>Explanation Date</th>
+                <th>Reason Type</th>
+                <th>Status Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of explanationsSuperAdmin">
+                <td class="titleModal">
+                  <a (click)="showDetail(item.ID)">{{item.Title}}</a>
+                </td>
+                <td>{{item.User.FullName}}</td>
+                <td>{{item.CreatedDate | date: 'dd/MM/yyyy'}}</td>
+                <td>{{item.ExplanationDate | date: 'dd/MM/yyyy'}}</td>
+                <td>
+                  <div *ngFor="let reason of item.AbnormalReason; let i = index">
+                    <span *ngIf="i < item.AbnormalReason.length - 1">{{ reason.ReasonName }}, </span>
+                    <span *ngIf="i >= item.AbnormalReason.length - 1">{{ reason.ReasonName }}</span>
+                  </div>
+                </td>
+                <td>{{item.StatusRequest.Name}}</td>
+             
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+
+        <!-- Show if permisstion is not super admin -->
+        <div *ngIf="!_authenService.hasPermission('EXPLANATION_LIST','caseRoleSuperAdmin') && !_authenService.hasPermission('EXPLANATION_LIST','readAdmin')">
+          <div *ngIf="explanations && explanations.length == 0" class="col-md-12">
+            <div class="alert alert-info">
+              <strong>Notification!</strong> No data found in system
+            </div>
+          </div>
+          <div *ngIf="explanations && explanations.length > 0" class="col-md-6">
+            <div [ngClass]="!loadsuccess ? 'prevent-click': ''">
+              <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+                [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+                lastText="&raquo;"></pagination>
+              <img *ngIf="!loadsuccess" class="image-loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+              />
+            </div>
+          </div>
+          <div *ngIf="explanations && explanations.length > 0 && totalRow > 1" class="col-md-6 showPage" style="text-align: right">
+            <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{totalEntries}} of {{totalRow}} entries</h5>
+          </div>
+          <div *ngIf="explanations && totalRow == 1" class="col-md-6 showPage" style="text-align: right">
+            <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{totalEntries}} of {{totalRow}} entry</h5>
+          </div>
+        </div>
+        
+        <!-- Show if permisstion is super admin -->
+        <div *ngIf="_authenService.hasPermission('EXPLANATION_LIST','caseRoleSuperAdmin') || _authenService.hasPermission('EXPLANATION_LIST','readAdmin')">
+          <div *ngIf="explanationsSuperAdmin && explanationsSuperAdmin.length == 0" class="col-md-12">
+            <div class="alert alert-info">
+              <strong>Notification!</strong> No data found in system
+            </div>
+          </div>
+          <div *ngIf="explanationsSuperAdmin && explanationsSuperAdmin.length > 0" class="col-md-6">
+            <div [ngClass]="!loadsuccess ? 'prevent-click': ''">
+              <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+                [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+                lastText="&raquo;"></pagination>
+              <img *ngIf="!loadsuccess" class="image-loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+              />
+            </div>
+          </div>
+          <div *ngIf="explanationsSuperAdmin && explanationsSuperAdmin.length > 0 && totalRow > 1" class="col-md-6 showPage" style="text-align: right">
+            <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{totalEntries}} of {{totalRow}} entries</h5>
+          </div>
+          <div *ngIf="explanationsSuperAdmin && totalRow == 1" class="col-md-6 showPage" style="text-align: right">
+            <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{totalEntries}} of {{totalRow}} entry</h5>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #addEditModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content ">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Explanation Detail</h4>
+        <button type="button" class="close pull-right" (click)="addEditModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div *ngIf="!hasPermission('EXPLANATION_LIST','readAll')" class="modal-body">
+        <form class="form-horizontal form-label-left input_mask" novalidate #detailForm="ngForm" *ngIf="entity">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Title
+              <span class="colorRed">*</span>:</label>
+
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" disabled="disabled" value="{{entity.Title}}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Full Name:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.User.FullName}}" disabled="disabled">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Group:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.User.Group.Name}}" disabled="disabled">
+            </div>
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Explanation Date:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.ExplanationDate | date: 'dd/MM/yyyy'}}" disabled="disabled">
+            </div>
+          </div>
+
+          <!-- <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Group:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.User.Group.Name}}" disabled="disabled">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Explanation Date:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.ExplanationDate | date: 'dd/MM/yyyy'}}" disabled="disabled">
+            </div>
+          </div> -->
+
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12 divfixtitle">Explanation Reason:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <div type="text" class="form-control detail-reason-list" disabled>
+                {{entity.ReasonList}}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" *ngIf="isUnauthorizedLeave">
+            <label class="control-label label-radio col-md-2 col-sm-3 col-xs-12">Actual
+              <span style="color:red">*</span>:</label>
+            <div class="control-radio col-md-5 col-sm-4 col-xs-12">
+              <label class="radio-check">
+                <input type="radio" name="radio" value="Leave" [(ngModel)]="entity.Actual" disabled="disabled" required> Leave
+                <span class="checkmark"></span>
+              </label>
+            </div>
+            <div class="control-radio col-md-5 col-sm-4 col-xs-12">
+              <label class="radio-check">
+                <input type="radio" name="radio" value="ForgetToCheck" [(ngModel)]="entity.Actual" disabled="disabled"> Forget to check Fingerprints
+                <span class="checkmark"></span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Description
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <textarea type="text" rows=3 maxlength="500" name="detailReason" class="form-control" disabled value="{{entity.ReasonDetail}}"></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Created Date:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.CreatedDate | date: 'dd/MM/yyyy'}}" disabled="disabled">
+            </div>
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Assigner:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.Receiver.FullName}}" disabled="disabled">
+            </div>
+          </div>
+
+          <!-- <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Created Date:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.CreatedDate | date: 'dd/MM/yyyy'}}" disabled="disabled">
+            </div>
+          </div> -->
+          <!-- <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Assigner:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.Receiver.FullName}}" disabled="disabled">
+            </div>
+          </div> -->
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Status:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.StatusRequest.Name}}" disabled="disabled">
+            </div>
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Approver:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.Approver?.FullName}}" disabled="disabled">
+            </div>
+          </div>
+
+
+          <div class="form-group" *ngIf="entity.FullNameDelegate != null">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12 divfixtitle">Delegate To:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <div type="text" class="form-control detail-reason-list" disabled>
+                {{entity.FullNameDelegate}}
+              </div>
+            </div>
+          </div>
+          <!-- <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Approver:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.Approver?.FullName}}" disabled="disabled">
+            </div>
+          </div> -->
+          <!-- <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Status:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.StatusRequest.Name}}" disabled="disabled">
+            </div>
+          </div> -->
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2">
+              <button type="button" class="btn btn-danger" *ngIf="hasPermission('EXPLANATION_LIST','cancel') 
+              && checkCanCel(entity)" (click)="cancelExplanation(entity.ID)">Cancel</button>
+              <button type="button" (click)="addEditModal.hide()" class="btn btn-circle">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div *ngIf="hasPermission('EXPLANATION_LIST','readAll')" class="modal-body">
+        <form class="form-horizontal form-label-left input_mask" novalidate #detailForm="ngForm" *ngIf="entity">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Title
+              <span class="colorRed">*</span>:</label>
+
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" disabled="disabled" value="{{entity.Title}}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Created By:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.User.FullName}}" disabled="disabled">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Created Date:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.CreatedDate | date: 'dd/MM/yyyy'}}" disabled="disabled">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Explanation Date:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.ExplanationDate | date: 'dd/MM/yyyy'}}" disabled="disabled">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12 divfixtitle">Explanation Reason:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <div type="text" class="form-control detail-reason-list" disabled>
+                {{entity.ReasonList}}
+              </div>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="isUnauthorizedLeave">
+            <label class="control-label label-radio col-md-2 col-sm-3 col-xs-12">Actual
+              <span style="color:red">*</span>:</label>
+            <div class="control-radio col-md-5 col-sm-4 col-xs-12">
+              <label class="radio-check">
+                <input type="radio" name="radio" value="Leave" [(ngModel)]="entity.Actual" disabled="disabled" required> Leave
+                <span class="checkmark"></span>
+              </label>
+            </div>
+            <div class="control-radio col-md-5 col-sm-4 col-xs-12">
+              <label class="radio-check">
+                <input type="radio" name="radio" value="ForgetToCheck" [(ngModel)]="entity.Actual" disabled="disabled"> Forget to check Fingerprints
+                <span class="checkmark"></span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Description
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <textarea type="text" rows=3 maxlength="500" name="detailReason" class="form-control" disabled value="{{entity.ReasonDetail}}"></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Status:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.StatusRequest.Name}}" disabled="disabled">
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group" *ngIf="!_authenService.hasPermission('EXPLANATION_LIST','caseRoleSuperAdmin')">
+            <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2">
+              <button *ngIf="entity.ID != null && hasPermission('EXPLANATION_LIST','readAll') && checkCanCel(entity)" type="button" class="btn btn-danger                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  "
+                (click)="cancelExplanation(entity.ID)">Cancel</button>
+              <button *ngIf="entity.ID != null && hasPermission('EXPLANATION_LIST','readAll') && checkApprove(entity)" type="button" class="btn btn-primary"
+                (click)="approveExplanation(entity.ID,entity.Title,entity.User)">Approve</button>
+              <button *ngIf="entity.ID != null && hasPermission('EXPLANATION_LIST','readAll') && checkReject(entity)" type="button" (click)="rejectExplanation(entity)"
+                class="btn btn-danger">Reject</button>
+              <button *ngIf="entity.ID != null && hasPermission('EXPLANATION_LIST','readAll') && checkDelegate(entity)" type="button" (click)="showDelegateConfirm(entity, 1)"
+                class="btn btn-success">Delegate</button>
+              <button type="button" (click)="addEditModal.hide()" class="btn btn-circle">Close</button>
+            </div>
+          </div>
+
+          <div class="form-group" *ngIf="_authenService.hasPermission('EXPLANATION_LIST','caseRoleSuperAdmin')">
+            <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2">
+              <button type="button" (click)="addEditModal.hide()" class="btn btn-circle">Close</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal delegate-->
+<div bsModal #modalDelegate="bs-modal" class="modal fade delegate-modal" id="testModal" style="display: none;" tabindex="-1"
+  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content delegate-modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Delegate explanation</h4>
+        <button type="button" class="close pull-right" (click)="closeDelegateDialog()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #delegateForm="ngForm" (ngSubmit)="delegateExplanation(delegateForm.valid, explanationObject, delegateId)">
+          <div class="form-group">
+            <label class="control-label col-md-4 col-sm-4 col-xs-12">Select delegate
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-7 col-sm-7 col-xs-12">
+              <ss-multiselect-dropdown required name="delegateUserId" [settings]="SearchSettings" [texts]="delegateDropdownTexts" [options]="delegateFilterOptions"
+                #delegateUserId="ngModel" [(ngModel)]="chosenDelegate"></ss-multiselect-dropdown>
+              <small [hidden]="chosenDelegate.valid || (chosenDelegate.pristine && !chosenDelegate.submitted)" class="text-danger">
+              </small>
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="delegate-action-button">
+              <button type="submit" class="btn btn-success" [disabled]="!delegateForm.form.valid">Save</button>
+              <button type="button" class="btn btn-circle" (click)="closeDelegateDialog()">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

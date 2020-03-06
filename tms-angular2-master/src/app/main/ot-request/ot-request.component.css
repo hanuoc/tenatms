@@ -1,0 +1,119 @@
+/* Table*/
+table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  th, td {
+    overflow-x: auto;
+    white-space: nowrap;
+    word-break: break-all;
+    max-width: 400px;
+    text-overflow: ellipsis;
+    text-align: left;
+    padding: 8px;
+    overflow:hidden;
+  }
+  tr:nth-child(even){background-color: #f9f9f9}
+  
+  .dateRangeLabel{
+    padding-top: 8px;
+    float: left;
+    padding-right: 20px;
+  }
+  .titleModal a{
+    color: #337ab7!important;
+  }
+  .titleModal a:hover{
+  color: black!important;
+  }
+  
+  .splitCol{
+    border-left: 1px solid #ccc;
+    float: left;
+    height: 20px;
+    margin-top: 5px;
+  }
+  .inputDate{
+    padding: 6px 10px!important;
+  }
+  .dropdown-inline[_ngcontent-c5]{
+    display: block!important;
+  }
+  .checkbox{
+    margin-top: 0px!important;
+    margin-bottom: 0px!important;
+  }
+  @media only screen and (max-width: 1370px) {
+    .titleRequest{
+      max-width: 191px;width: 191px ;min-width:191px;
+    }
+    .titleRequestMember{
+      max-width: 400px;width: 400px ;min-width:400px;
+    }
+    .FullNameOTRequest{
+      max-width: 180px;width: 180px ;min-width:180px;
+    }
+    .AccountOTRequest{
+      max-width: 60px;width: 60px ;min-width:60px;
+    }
+    .GroupOTRequest{
+      max-width: 60px;width: 60px ;min-width:60px;
+    }
+    .titleModal{
+      cursor: pointer;
+      max-width: 191px;width: 191px ;min-width:191px;
+     }
+    .OTDate{
+      max-width: 80px;width: 80px ;min-width:80px;
+    }
+    .OTTimeType{
+      max-width: 110px;width: 110px ;min-width:110px;
+    }
+    .OTDayType{
+      max-width: 100px;width: 100px ;min-width:100px;
+    }
+    .StatusRequest{
+      max-width: 60px;width: 100px ;min-width:100px;
+    }
+    .ActionRequest{
+      max-width: 60px;width: 60px ;min-width:60px;
+    }
+  }
+
+  @media only screen and (min-width: 1370px) {
+    .titleRequest{
+      max-width: 270px;width: 270px ;min-width:270px;
+    }
+    .titleRequestMember{
+      max-width: 400px;width: 400px ;min-width:400px;
+    }
+    .FullNameOTRequest{
+      max-width: 180px;width: 180px ;min-width:180px;
+    }
+    .AccountOTRequest{
+      max-width: 60px;width: 60px ;min-width:60px;
+    }
+    .GroupOTRequest{
+      max-width: 60px;width: 60px ;min-width:60px;
+    }
+    .titleModal{
+      cursor: pointer;
+      max-width: 191px;width: 191px ;min-width:191px;
+     }
+    .OTDate{
+      max-width: 80px;width: 80px ;min-width:80px;
+    }
+    .OTTimeType{
+      max-width: 110px;width: 110px ;min-width:110px;
+    }
+    .OTDayType{
+      max-width: 100px;width: 100px ;min-width:100px;
+    }
+    .StatusRequest{
+      max-width: 100px;width: 100px ;min-width:100px;
+    }
+    .ActionRequest{
+      max-width: 100px;width: 100px ;min-width:100px;
+    }
+  }

@@ -1,0 +1,149 @@
+  /* Table*/
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td ,th{
+  overflow-x: auto;
+  white-space: nowrap;
+  word-break: break-all;
+  text-overflow: ellipsis;
+  text-align: left;
+  overflow:hidden;
+}
+  /* Customize all css for class .input-group */
+  .input-group {
+    margin-bottom: 0px!important;
+  }
+  .input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group
+  {
+    width:100%;
+  }
+  
+  @media only screen and (max-width: 1366px) {
+    .titleRequest{
+      max-width: 191px;width: 191px ;min-width:191px;
+    }
+    .titleRequestMember{
+      max-width: 270px;width: 270px ;min-width:270px;
+    }
+    .titleModal{
+      cursor: pointer;
+      max-width: 191px;width: 191px ;min-width:191px;
+     }
+    .RequestType{
+      max-width: 105px;width: 105px ;min-width:105px;
+    }
+    .FullNameRequest{
+      max-width: 150px;width: 150px ;min-width:150px;
+    }
+    .ReasonType{
+      max-width: 120px;width: 120px ;min-width:120px;
+    }
+    .StartDate{
+      max-width: 100px;width: 100px ;min-width:100px;
+    }
+    .EndDate{
+      max-width: 100px;width: 100px ;min-width:100px;
+    }
+    .StatusRequest{
+      max-width: 100px;width: 100px ;min-width:100px;
+    }
+    .ActionRequest{
+      max-width: 100px;width: 100px ;min-width:100px;
+    }
+    .divpopupmarginbutton{margin-bottom: 10px;}
+    /* .divrequestfullname{padding-right: 0px; width: 100%; margin: 5px 0px;}
+    .divrequestdatetimepicker{padding-right: 0px;width: 100%; margin: 5px 0px;}
+    .divrequestgrouplead{padding-right: 0px;width: 100%; margin: 5px 0px;} */
+
+    .divrequestfullname{ margin: 5px 0px;}
+    .divrequestdatetimepicker{ margin: 5px 0px;}
+    .divrequestgrouplead{margin: 5px 0px;}
+  }
+
+  @media only screen and (min-width: 1366px) {
+    .titleRequest{
+      max-width: 250px;width: 250px ;min-width:250px;
+    }
+    .titleRequestMember{
+      max-width: 470px;width: 470px ;min-width:470px;
+    }
+    .titleModal{
+      cursor: pointer;
+      max-width: 191px;width: 191px ;min-width:191px;
+     }
+    .RequestType{
+      max-width: 105px;width: 105px ;min-width:105px;
+    }
+    .FullNameRequest{
+      max-width: 150px;width: 150px ;min-width:150px;
+    }
+    .ReasonType{
+      max-width: 120px;width: 120px ;min-width:120px;
+    }
+    .StartDate{
+      max-width: 90px;width: 90px ;min-width:90px;
+    }
+    .EndDate{
+      max-width: 90px;width: 90px ;min-width:90px;
+    }
+    .StatusRequest{
+      max-width: 120px;width: 120px ;min-width:120px;
+    }
+    .ActionRequest{
+      max-width: 100px;width: 100px ;min-width:100px;
+    }
+    /* .divrequestfullname{padding-right: 0px; width: 14.5%;} */
+    /* .divrequestdatetimepicker{padding-right: 0px;width: 17%;} */
+    /* .divrequestgrouplead{padding-right: 0px;width: 25%;} */
+
+
+    /* .divrequestfullname {
+      width: 15%;
+    }
+    .divrequestdatetimepicker{
+      width: 16%;
+    }
+    .divrequestgrouplead{
+      width: 23%;
+    } */
+  }
+.colorRed{
+    color:red;
+}
+textarea { 
+  overflow-y: scroll;
+  resize: none;
+}
+
+/* .dateRange {
+  padding: 6px 5px!important;
+} */
+ .modal-admin {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 450px;
+}
+.delegate-modal{
+  max-width: 450px!important;
+}
+.delegate-action-button{
+  text-align: right;
+  margin-right: 39px;
+}
+
+ 
+ .titleModal a{
+   color: #337ab7!important;
+ }
+ .titleModal a:hover{
+ color: black!important;
+ }
+ .checkbox{
+  margin-top: 0px!important;
+  margin-bottom: 0px!important;
+}
+/* .fixbutton{margin: 0px !important; padding: 0px !important;} */
+/* .buttonright button{margin: 0px; padding: 7px !important;} */

@@ -1,0 +1,516 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <h3>Request Management
+        <small>OT Request List</small>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="clearfix"></div>
+    <div class="x_panel">
+      <div>
+        <div class="row">
+          <div class="form-group">
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput" *ngIf="checkRole() && ! _authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') ">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="FullNameDropdownTexts" [settings]="dropdownFilterSearchSettings"
+                [options]="FullNameOption" [(ngModel)]="FullNameFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput" *ngIf="_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') ">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="FullNameDropdownGeneralAdmin" [settings]="dropdownFilterSearchSettings"
+                [options]="FullNameGeneralAdmin" [(ngModel)]="FullNameFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="StatusDropdownTexts" [settings]="dropdownFilterSettings"
+                [options]="statusRequestOption" [(ngModel)]="statusRequestFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput" *ngIf="!checkRole()">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="OTDateTypeDropdownTexts" [settings]="dropdownFilterSettings"
+                [options]="OTDateTypeOption" [(ngModel)]="OTDateTypeFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput" *ngIf="!checkRole()">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="OTTimeTypeDropdownTexts" [settings]="dropdownFilterSettings"
+                [options]="OTTimeTypeOption" [(ngModel)]="OTTimeTypeFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-3 col-sm-12 col-xs-12 divfixdatetimepicker">
+              <div class="input-group" daterangepicker [options]="daterangepickerOptions" (selected)="selectedDateRangePicker($event, chosenDate)">
+                <span class="form-control uneditable-input" name="daterange">
+                  {{ chosenDate.start | date:'dd/MM/y' }} - {{ chosenDate.end| date:'dd/MM/y' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+            <div class="col-md-1 col-sm-12 col-xs-12 divfixbutton" *ngIf="_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') ">
+              <button type="button" class="btn btn-info btn-circle " title="Filter" (click)="filterOTRequest()">
+                <i class="fa fa-filter"></i>
+              </button>
+              <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="reset()">
+                <i class="fa fa-undo"></i>
+              </button>
+            </div>
+            <div class="col-md-3 col-sm-12 col-xs-12 divfixbutton" *ngIf="!_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') ">
+              <button type="button" class="btn btn-info btn-circle" title="Filter" (click)="filterOTRequest()">
+                <i class="fa fa-filter"></i>
+              </button>
+              <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="reset()">
+                <i class="fa fa-undo"></i>
+              </button>
+              <button type="button" class="btn btn-success btn-circle" title="Create" *ngIf="_authenService.hasPermission('OTREQUEST_LIST','create')"
+                (click)="showAddModal()">
+                <i class="fa fa-plus"></i>
+              </button>
+              <button type="button" class="btn btn-primary btn btn-circle" title="Approve Selected" *ngIf="checkRole()" [disabled]="!checkApprove"
+                (click)="approvedAll()">
+                <i class="fa fa-check"></i>
+              </button>
+              <button type="button" class="btn btn-danger btn btn-circle" title="Reject Selected" *ngIf="checkRole()" [disabled]="!checkReject"
+                (click)="rejectedAll()">
+                <i class="fa fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="x_title">
+          <div class="clearfix"></div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table *ngIf="otRequest && otRequest.length > 0 && !_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin')"
+            class="table table-bordered">
+            <thead>
+              <tr>
+                <th *ngIf="checkRole()" width="20">
+                  <input type="checkbox" name="checkOTRequest" id="checkboxID" [checked]="isAllChecked()&&isGreater0" (change)="checkAll($event,isAllChecked())">
+                </th>
+                <th class="titleRequest" *ngIf="!checkRole()" class="titleRequestMember pointer" (click)="sort('Title')">
+                  Title
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'Title', 
+              'fa-sort-asc': (column == 'Title' && isDesc), 
+              'fa-sort-desc': (column == 'Title' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th *ngIf="checkRole()" class="titleRequest ">Title</th>
+                <th *ngIf="checkRole()" class="pointer FullNameOTRequest" (click)="sort('AppUserCreatedBy.UserName')" width="125">
+                  Full Name
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'AppUserCreatedBy.UserName', 
+                'fa-sort-asc': (column == 'AppUserCreatedBy.UserName' && isDesc), 
+                'fa-sort-desc': (column == 'AppUserCreatedBy.UserName' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th *ngIf="checkRole()">Account</th>
+                <th *ngIf="checkRole()">Group</th>
+                <th class="pointer OTDate" (click)="sort('OTDate')">
+                  OT Date
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'OTDate', 
+                'fa-sort-asc': (column == 'OTDate' && isDesc), 
+                'fa-sort-desc': (column == 'OTDate' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th class="OTDayType">OT Day Type</th>
+                <th class="OTTimeType">OT Time Type</th>
+                <th class="StatusRequest">Status Type</th>
+                <th class="ActionRequest">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of otRequest">
+                <td *ngIf="checkRole()">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" [(ngModel)]="item.Checked" [disabled]="!(checkApproved(item.StatusRequest.Name,item.OTDate) || checkRejected(item.StatusRequest.Name,item.OTDate))"
+                        [name]="item.ID" (change)="checkBoxList($event,item)" [ngModelOptions]="{standalone: true}">
+                    </label>
+                  </div>
+                </td>
+                <td class="titleModal" (click)="showEditModal(item.ID)">
+                  <a> {{item.Title}}</a>
+                </td>
+                <td *ngIf="checkRole()"> {{item.AppUserCreatedBy.FullName}} </td>
+                <td *ngIf="checkRole()">{{item.AppUserCreatedBy.UserName}}</td>
+                <td *ngIf="checkRole()">{{item.AppUserCreatedBy.Group?.Name}}</td>
+                <td>{{item.OTDate | date: 'dd/MM/yyyy'}}</td>
+                <td>{{item.OTDateType.Name}}</td>
+                <td>{{item.OTTimeType.Name}}</td>
+                <td>{{item.StatusRequest.Name}}</td>
+                <td>
+                  <button class="btn btn-primary btn-xs btn-primary" title="Edit" *ngIf="_authenService.hasPermission('OTREQUEST_LIST','cancel') && checkCancel(item.AppUserCreatedBy.Id,item.StatusRequest.Name,item.OTDate)"
+                    (click)="showUpdateModal(item.ID)">
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                  </button>
+                  <button class="btn btn-default btn-xs btn-danger" title="Cancel" *ngIf="_authenService.hasPermission('OTREQUEST_LIST','cancel') && checkCancel(item.AppUserCreatedBy.Id,item.StatusRequest.Name,item.OTDate) "
+                    (click)="cancelOTRequest(item.ID)">
+                    <i class="fa fa-ban" aria-hidden="true" style="color:white"></i>
+                  </button>
+                  <button class="btn btn-default btn-xs btn-primary" title="Approve" *ngIf="checkRole() && checkApproved(item.StatusRequest.Name,item.OTDate)"
+                    (click)="approvedOTRequest(item.ID,item.Title,item.AppUserCreatedBy.Email)">
+                    <i class="fa fa-check" aria-hidden="true" style="color:white"></i>
+                  </button>
+                  <button class="btn btn-default btn-xs btn-danger" title="Reject" *ngIf="checkRole() && checkRejected(item.StatusRequest.Name,item.OTDate)"
+                    (click)="rejectedOTRequest(item.ID,item.Title,item.CreatedBy,item.AppUserCreatedBy.Email)">
+                    <i class="fa fa-times" aria-hidden="true" style="color:white"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- test -->
+          <table *ngIf="otRequestGeneralAdmin && otRequestGeneralAdmin.length > 0 && _authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin')"
+            class="table table-bordered">
+            <thead>
+              <tr>
+                <!-- <th *ngIf="checkRole()" width="20">
+                  <input type="checkbox" name="checkOTRequest" id="checkboxID" [checked]="isAllChecked()&&isGreater0" (change)="checkAll($event,isAllChecked())">
+                </th> -->
+                <th class="titleRequest" class="titleRequestMember pointer" (click)="sort('Title')">
+                  Title
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'Title', 
+                'fa-sort-asc': (column == 'Title' && isDesc), 
+                'fa-sort-desc': (column == 'Title' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th class="pointer FullNameOTRequest" (click)="sort('AppUserCreatedBy.UserName')" width="125">
+                  Full Name
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'AppUserCreatedBy.UserName', 
+                  'fa-sort-asc': (column == 'AppUserCreatedBy.UserName' && isDesc), 
+                  'fa-sort-desc': (column == 'AppUserCreatedBy.UserName' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th>Account</th>
+                <th>Group</th>
+                <th class="pointer OTDate" (click)="sort('OTDate')">
+                  OT Date
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'OTDate', 
+                  'fa-sort-asc': (column == 'OTDate' && isDesc), 
+                  'fa-sort-desc': (column == 'OTDate' && !isDesc) }" aria-hidden="true"> </i>
+                </th>
+                <th class="OTDayType">OT Day Type</th>
+                <th class="OTTimeType">OT Time Type</th>
+                <th class="StatusRequest">Status Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of otRequestGeneralAdmin">
+                <!-- <td *ngIf="checkRole()">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" [(ngModel)]="item.Checked" [disabled]="!(checkApproved(item.StatusRequest.Name,item.OTDate) || checkRejected(item.StatusRequest.Name,item.OTDate))"
+                        [name]="item.ID" (change)="checkBoxList($event,item)" [ngModelOptions]="{standalone: true}">
+                    </label>
+                  </div>
+                </td> -->
+                <td class="titleModal" (click)="showEditModal(item.ID)">
+                  <a> {{item.Title}}</a>
+                </td>
+                <td> {{item.AppUserCreatedBy.FullName}} </td>
+                <td>{{item.AppUserCreatedBy.UserName}}</td>
+                <td>{{item.AppUserCreatedBy.Group?.Name}}</td>
+                <td>{{item.OTDate | date: 'dd/MM/yyyy'}}</td>
+                <td>{{item.OTDateType.Name}}</td>
+                <td>{{item.OTTimeType.Name}}</td>
+                <td>{{item.StatusRequest.Name}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="otRequest && otRequest.length == 0  && !_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin')"
+          class="col-md-12">
+          <div class="alert alert-info">
+            <strong>Notification!</strong> No data found in system
+          </div>
+        </div>
+        <div *ngIf="otRequestGeneralAdmin && otRequestGeneralAdmin.length == 0  && _authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') "
+          class="col-md-12">
+          <div class="alert alert-info">
+            <strong>Notification!</strong> No data found in system
+          </div>
+        </div>
+        <div *ngIf="otRequest && otRequest.length > 0 && ! _authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') "
+          class="col-md-6">
+          <div [ngClass]="!loadsuccess ? 'prevent-click': ''">
+            <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+              [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+              lastText="&raquo;"></pagination>
+            <img *ngIf="!loadsuccess" class="image-loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+            />
+          </div>
+        </div>
+        <div *ngIf="otRequestGeneralAdmin && otRequestGeneralAdmin.length > 0 && _authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') "
+          class="col-md-6">
+          <div [ngClass]="!loadsuccess ? 'prevent-click': ''">
+            <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+              [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+              lastText="&raquo;"></pagination>
+            <img *ngIf="!loadsuccess" class="image-loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+            />
+          </div>
+        </div>
+        <div *ngIf="otRequest && otRequest.length > 0 && totalRow > 1 && !_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') "
+          class="col-md-6 showPage" style="text-align: right">
+          <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+        </div>
+        <div *ngIf="otRequestGeneralAdmin && otRequestGeneralAdmin.length > 0 && totalRow > 1 && _authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') "
+          class="col-md-6 showPage" style="text-align: right">
+          <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+        </div>
+        <div *ngIf="otRequest && totalRow == 1 && !_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') " class="col-md-6 showPage"
+          style="text-align: right">
+          <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+        </div>
+        <div *ngIf="otRequestGeneralAdmin && totalRow == 1 && _authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') "
+          class="col-md-6 showPage" style="text-align: right">
+          <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal add and edit-->
+<div bsModal #modalAddEdit="bs-modal" [config]="{'backdrop':'static', 'keyboard': false}" class="modal fade" tabindex="-1"
+  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left" *ngIf="!isCreate && !isEdit">OT Request Detail</h4>
+        <h4 class="modal-title pull-left" *ngIf="!isCreate && isEdit">OT Request Update</h4>
+        <h4 class="modal-title pull-left" *ngIf="isCreate && !isEdit">Create OT Request</h4>
+        <button type="button" class="close pull-right" (click)="hideModal(addEditForm)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #addEditForm="ngForm" (ngSubmit)="saveData(addEditForm)" *ngIf="entity">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Title
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" #title="ngModel" [disabled]="!isCreate && !isEdit" [(ngModel)]="entity.Title" required maxlength="100"
+                minlength="10" name="title" class="form-control">
+              <small *ngIf="addEditForm.controls['title']?.hasError('minlength')" class="text-danger">
+                Title length must be between 10 to 100 characters!
+              </small>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') ">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Full Name:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12 ">
+              <input *ngIf="!isCreate && checkRole()" type="text" value={{entity.AppUserCreatedBy?.FullName}} [disabled]="true" class="form-control">
+              <input *ngIf="isCreate" type="text" value={{user.fullName}} [disabled]="true" class="form-control">
+              <input *ngIf="!isCreate && !checkRole()" type="text" value={{user.fullName}} [disabled]="true" class="form-control">
+            </div>
+          </div>
+          <div class="form-group" *ngIf="_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') ">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Full Name:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12 ">
+              <input type="text" value={{entity.AppUserCreatedBy.FullName}} [disabled]="true" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Group:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12" *ngIf="!_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') ">
+              <input type="text" value={{group.Name}} [disabled]="true" class="form-control">
+            </div>
+            <div class="col-md-4 col-sm-3 col-xs-12" *ngIf="_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') ">
+              <input type="text" value={{entity.AppUserCreatedBy.Group.Name}} [disabled]="true" class="form-control">
+            </div>
+            <div *ngIf="isCreate || isEdit">
+
+              <label class="control-label col-md-2 col-sm-2 col-xs-12">OT Date
+                <span style="color:red">*</span>:</label>
+              <div class="col-md-4 col-sm-4 col-xs-12" *ngIf="isEdit">
+                <div class="input-group" daterangepicker [options]="daterangepickerOptions" (selected)="selectedDatePicker($event, chosenDateOTDate)">
+                  <span class="form-control uneditable-input" name="datepicker">
+                    {{ chosenDateOTDate.end | date:'dd/MM/y' }}
+                  </span>
+                  <span class="input-group-btn" disabled>
+                    <a type="button" class="btn btn-default">
+                      <i class="glyphicon glyphicon-calendar"></i>
+                    </a>
+                  </span>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-4 col-xs-12" *ngIf="!isEdit">
+                <div class="input-group" daterangepicker [options]="daterangepickerOptions" (selected)="selectedDatePicker($event, chosenDateOTDate)">
+                  <span class="form-control uneditable-input" name="datepicker">
+                    {{ chosenDateOTDate.end | date:'dd/MM/y' }}
+                  </span>
+                  <span class="input-group-btn" disabled>
+                    <a type="button" class="btn btn-default">
+                      <i class="glyphicon glyphicon-calendar"></i>
+                    </a>
+                  </span>
+                </div>
+
+              </div>
+            </div>
+            <div *ngIf="!isCreate && !isEdit">
+              <label class="control-label col-md-2 col-sm-2 col-xs-12">OT Date
+                <span style="color:red">*</span>:</label>
+              <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="input-group">
+                  <span class="form-control uneditable-input" name="datepicker" disabled=true>
+                    {{ chosenDateOTDate.end | date:'dd/MM/y' }}
+                  </span>
+                  <span class="input-group-btn" disabled>
+                    <a type="button" class="btn btn-default">
+                      <i class="glyphicon glyphicon-calendar"></i>
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">OT Date Type
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <ss-multiselect-dropdown required name="OTDateTypeID" [settings]="dropdownSettings" [disabled]="!isCreate && !isEdit" [texts]="OTDateTypeDropdownTexts"
+                [options]="OTDateTypeOption" #OTDateTypeID="ngModel" [(ngModel)]="entity.OTDateTypeID"></ss-multiselect-dropdown>
+              <small [hidden]="OTDateTypeID.valid || (OTDateTypeID.pristine && !addEditForm.submitted)" class="text-danger">
+              </small>
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">OT Time Type
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <ss-multiselect-dropdown required name="OTTimeTypeID" [disabled]="!isCreate && !isEdit" [texts]="OTTimeTypeDropdownTexts"
+                [settings]="dropdownSettings" [options]="OTTimeTypeOption" #OTTimeTypeID="ngModel" [(ngModel)]="entity.OTTimeTypeID"></ss-multiselect-dropdown>
+              <small [hidden]="OTTimeTypeID.valid || (OTTimeTypeID.pristine && !addEditForm.submitted)" class="text-danger">
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Start Time
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input [disabled]="!isCreate && !isEdit" required class="form-control" type="time" #StartTime="ngModel" [(ngModel)]="entity.StartTime"
+                pattern="[0-9]{1,2}:[0-9]{1,2}" name="StartTime">
+            </div>
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">End Time
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input [disabled]="!isCreate && !isEdit" required class="form-control" type="time" #EndTime="ngModel" [(ngModel)]="entity.EndTime"
+                pattern="[0-9]{1,2}:[0-9]{1,2}" name="EndTime">
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!isCreate && !checkRole()&& !_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin')  ">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Create By:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input type="text" value={{entity.AppUserCreatedBy?.FullName}} [disabled]="true" class="form-control">
+            </div>
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Status:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input type="text" value={{entity.StatusRequest?.Name}} [disabled]="true" class="form-control">
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!isCreate && !checkRole()&& _authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin')  ">
+            <!-- <label class="control-label col-md-3 col-sm-3 col-xs-12">Create By:</label>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+              <input type="text" value={{entity.AppUserCreatedBy?.FullName}} [disabled]="true" class="form-control">
+            </div> -->
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Status:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input type="text" value={{entity.StatusRequest?.Name}} [disabled]="true" class="form-control">
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!isCreate && checkRole()">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Status:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input type="text" value={{entity.StatusRequest?.Name}} [disabled]="true" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group" *ngIf="isCreate">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">List Member
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-10 col-xs-12 ">
+              <ss-multiselect-dropdown required name="OTRequestUserID" [texts]="UserGroupDropdownTexts" [settings]="dropdownSearchSettings"
+                [options]="usersOption" #OTRequestUserID="ngModel" [(ngModel)]="entity.OTRequestUserID" ></ss-multiselect-dropdown>
+              <small [hidden]="OTRequestUserID.valid || (OTRequestUserID.pristine && !addEditForm.submitted)" class="text-danger">
+              </small>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!isCreate && checkRole() && !_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') ">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">List Member
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-10 col-xs-12">
+              <ss-multiselect-dropdown required name="OTRequestUserID" [disabled]="checkRole()" [texts]="UserGroupDropdownTexts" [settings]="dropdownSearchSettings"
+                [options]="usersOption" #OTRequestUserID="ngModel" [(ngModel)]="entity.OTRequestUserID"></ss-multiselect-dropdown>
+              <small [hidden]="OTRequestUserID.valid || (OTRequestUserID.pristine && !addEditForm.submitted)" class="text-danger">
+              </small>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!isCreate && !checkRole() && _authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin') ">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">List Member
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-10 col-xs-12">
+              <!-- <input class="form-control" value="{{entity.CreateBy}}" disabled="disabled">         -->
+              <ss-multiselect-dropdown required name="OTRequestUserID" [disabled]="!checkRole()" [texts]="UserGroupDropdownTexts" [settings]="dropdownSearchSettings"
+                [options]="allusersOption" #OTRequestUserID="ngModel" [(ngModel)]="entity.OTRequestUserID"></ss-multiselect-dropdown>
+              <small [hidden]="OTRequestUserID.valid || (OTRequestUserID.pristine && !addEditForm.submitted)" class="text-danger">
+              </small>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!isCreate && !checkRole() && !_authenService.hasPermission('OTREQUEST_LIST','readAllGeneralAdmin')">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">List Member :
+            </label>
+            <div class="col-md-10 col-sm-10 col-xs-12">
+              <ss-multiselect-dropdown required name="OTRequestUserID" [disabled]="!checkRole()" [texts]="UserGroupDropdownTexts" [settings]="dropdownSearchSettings"
+                [options]="usersOption" #OTRequestUserID="ngModel" [(ngModel)]="entity.OTRequestUserID"></ss-multiselect-dropdown>
+              <small [hidden]="OTRequestUserID.valid || (OTRequestUserID.pristine && !addEditForm.submitted)" class="text-danger">
+              </small>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="isCreate">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Receiver:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [options]="groupLeadOption" [(ngModel)]="groupLeadFilter"
+                [settings]="dropdownReceiverSearchSettings" [disabled]=true></ss-multiselect-dropdown>
+            </div>
+            <div class="form-group" *ngIf="isCreate">
+              <label class="control-label col-md-2 col-sm-3 col-xs-12">Mail CC:</label>
+              <div class="col-md-4 col-sm-4 col-xs-12">
+                <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="FullNameDropdownTextsCC" [settings]="dropdownSearchFilterSettingsCC"
+                  [options]="FullNameOptionCC" [(ngModel)]="FullNameFilterCC"></ss-multiselect-dropdown>
+              </div>
+
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!isCreate && !checkRole()">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Approver/Rejecter:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" value={{entity.AppUserUpdatedBy?.FullName}} [disabled]="true" class="form-control">
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2">
+              <button class="btn btn-success" type="button" *ngIf="(entity.ID != null && !isCreate && !isEdit && isUser && entity.StatusRequestID==1) && !checkEditPendding(entity) && checkCancel(entity.AppUserCreatedBy?.Id,entity.StatusRequest?.Name,entity.OTDate)"
+                (click)="showEditOTRequest(entity.ID)">Edit</button>
+              <button class="btn btn-success" type="submit" *ngIf="isEdit" [disabled]="!addEditForm.form.valid">Update</button>
+              <button class="btn btn-primary" type="button" *ngIf="isEdit" (click)="showResetModal(entity.ID)">Reset</button>
+              <button class="btn btn-danger" type="button" *ngIf="_authenService.hasPermission('OTREQUEST_LIST','cancel') && isCancel && checkCancel(entity.AppUserCreatedBy?.Id,entity.StatusRequest?.Name,entity.OTDate)"
+                (click)="cancelOTRequest(entity.ID)">Cancel</button>
+              <button *ngIf="!isCreate && checkRole() && checkApproved(entity.StatusRequest?.Name,entity.OTDate)" (click)="approvedOTRequest(entity.ID)"
+                type="button" class="btn btn-primary">Approve</button>
+              <button *ngIf="!isCreate && checkRole() && checkRejected(entity.StatusRequest?.Name,entity.OTDate)" (click)="rejectedOTRequest(entity.ID,entity.Title,entity.CreatedBy)"
+                type="button" class="btn btn-danger">Reject</button>
+              <button *ngIf="isCreate" type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid || isDisable">Add</button>
+              <button *ngIf="isCreate" type="button" (click)="resetForm(addEditForm)" class="btn btn-primary">Reset</button>
+              <button type="button" type="button" (click)="hideModal(addEditForm)" class="btn btn-circle">Close</button>
+
+              <!-- <button *ngIf="_authenService.hasPermission('OTREQUEST_LIST','cancel') && isCancel && checkCancel(entity.AppUserCreatedBy?.Id,entity.StatusRequest?.Name,entity.OTDate)"
+                (click)="cancelOTRequest(entity.ID)" type="button" class="btn btn-danger">Cancel</button>
+                <button *ngIf="!isCreate && checkRole() && checkApproved(entity.StatusRequest?.Name,entity.OTDate)" (click)="approvedOTRequest(entity.ID)" type="button" class="btn btn-primary">Approve</button>
+                <button *ngIf="!isCreate && checkRole() && checkRejected(entity.StatusRequest?.Name,entity.OTDate)" (click)="rejectedOTRequest(entity.ID,entity.Title,entity.CreatedBy)" type="button" class="btn btn-danger">Reject</button>  
+              <button *ngIf="isCreate" type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid">Add</button>
+              <button *ngIf="isCreate" type="button" (click)="resetForm(addEditForm)" class="btn btn-primary">Reset</button>
+              <button type="button" type="button" (click)="hideModal(modalAddEdit)" class="btn btn-circle">Close</button> -->
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail GeneralAdmin -->

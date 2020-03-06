@@ -1,0 +1,359 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <h3>Time Management
+        <small>Abnormal Case List</small>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="clearfix"></div>
+    <div class="x_panel">
+      <div *ngIf=" !hasPermission('ABNORMALCASE_LIST','readAll')">
+        <div class="row">
+          <div class="form-group">
+        <!-- <div class="col-md-2 col-sm-6 col-xs-12 form-group">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [settings]="mySettings" [texts]="fullNameDropdowTexts" [options]="FullNameOption"
+              [(ngModel)]="FullNameFilter"></ss-multiselect-dropdown>
+          </div> -->
+        <div class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+          <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [settings]="mySettings" [texts]="reasonDropdownTexts" [options]="abnormalReasonFilterOptions"
+            [(ngModel)]="AbnormalFilter"></ss-multiselect-dropdown>
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+          <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [settings]="mySettings" [texts]="statusDropdownTexts" [options]="statusFilterOptions"
+            [(ngModel)]="StatusFilter"></ss-multiselect-dropdown>
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+          <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [settings]="mySettings" [texts]="abnormalDropdownTexts" [options]="abnormalReasonTypeFilterOptions"
+            [(ngModel)]="AbnormalReasonTypeFilter"></ss-multiselect-dropdown>
+        </div>
+        <div class="col-md-3 col-sm-12 col-xs-12 divfixdatetimepicker">
+          <div class="input-group" daterangepicker [options]="daterangepickerOptions" (selected)="selectedDateRangePicker($event, chosenDate)">
+            <span class="form-control uneditable-input" name="daterange">
+              {{ chosenDate.start | date:'dd/M/y' }} - {{ chosenDate.end| date:'dd/MM/y' }}
+            </span>
+            <span class="input-group-btn">
+              <a type="button" class="btn btn-default">
+                <i class="glyphicon glyphicon-calendar"></i>
+              </a>
+            </span>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-12 col-xs-12 divfixbutton">
+          <button type="button" class="btn btn-info btn-circle" title="Filter" (click)="filterAbnormal()">
+            <i class="fa fa-filter"></i>
+          </button>
+          <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="reset()">
+            <i class="fa fa-undo"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+      <div *ngIf=" hasPermission('ABNORMALCASE_LIST','readAll')">
+        <div class="row">
+          <div class="form-group">
+            <div class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [settings]="dropdownSearchFilterSettings" [texts]="fullNameDropdowTexts"
+                [options]="FullNameOption" [(ngModel)]="FullNameFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [settings]="mySettings" [texts]="reasonDropdownTexts" [options]="abnormalReasonFilterOptions"
+                [(ngModel)]="AbnormalFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [settings]="mySettings" [texts]="statusDropdownTexts" [options]="statusFilterOptions"
+                [(ngModel)]="StatusFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [settings]="mySettings" [texts]="abnormalDropdownTexts" [options]="abnormalReasonTypeFilterOptions"
+                [(ngModel)]="AbnormalReasonTypeFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 divfixdatetimepicker">
+              <div class="input-group" daterangepicker [options]="daterangepickerOptions" (selected)="selectedDateRangePicker($event, chosenDate)">
+                <span class="form-control uneditable-input" name="daterange">
+                  {{ chosenDate.start | date:'dd/M/y' }} - {{ chosenDate.end| date:'dd/MM/y' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+            <div class="col-md-1 col-sm-12 col-xs-12 divfixbutton" *ngIf="_authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin')">
+              <button type="button" class="btn btn-info btn-circle" title="Filter" (click)="filterAbnormal()">
+                <i class="fa fa-filter"></i>
+              </button>
+              <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="reset()">
+                <i class="fa fa-undo"></i>
+              </button>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixbutton" *ngIf="!_authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin')">
+                <button type="button" class="btn btn-info btn-circle" title="Filter" (click)="filterAbnormal()">
+                  <i class="fa fa-filter"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="reset()">
+                  <i class="fa fa-undo"></i>
+                </button>
+                <button title="Export Excel" type="button" (click)="Export()" class="btn btn-primary btn-success">
+                  <i class="fa fa-download"></i>
+                </button>
+              </div>
+          </div>
+        </div>
+        <!-- <div class="row" style="margin-top:5px" *ngIf="!_authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin')">
+          <div class="form-group">
+            <div class="col-md-offset-8 col-md-4 col-sm-12 col-xs-12" style="text-align: right">
+              <button type="button" class="btn btn-info btn-circle" title="Filter" (click)="filterAbnormal()">
+                <i class="fa fa-filter"></i>
+              </button>
+              <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="reset()">
+                <i class="fa fa-undo"></i>
+              </button>
+              <button title="Export Excel" type="button" (click)="Export()" class="btn btn-primary btn-success">
+                <i class="fa fa-download"></i>
+              </button>
+            </div>
+          </div>
+        </div> -->
+      </div>
+      <div class="x_title">
+        <div class="clearfix"></div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table *ngIf="abnormalcase && abnormalcase.length > 0 &&  hasPermission('ABNORMALCASE_LIST','readAll')" class="table table-bordered">
+          <thead>
+            <tr>
+              <th (click)="sort('FullName')">Full Name
+                <i class="fa" [ngClass]="{'fa-sort': column != 'FullName', 
+                    'fa-sort-asc': (column == 'FullName' && !isDesc), 
+                    'fa-sort-desc': (column == 'FullName' && isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th>Group</th>
+              <th (click)="sort('AbnormalDate')">Abnormal Date
+                <i class="fa" [ngClass]="{'fa-sort': column != 'AbnormalDate', 
+                  'fa-sort-asc': (column == 'AbnormalDate' && !isDesc), 
+                  'fa-sort-desc': (column == 'AbnormalDate' && isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th>Reason Type</th>
+              <th>Absent Type</th>
+              <!-- <th>Check In</th>
+              <th>Check Out</th>
+              <th>Working Time</th> -->
+              <!-- <th>Approver</th> -->
+              <th>Status Type</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of abnormalcase">
+              <td class="fix-center">{{item.FullName}}</td>
+              <td class="fix-center">{{item.GroupName}}</td>
+              <td class="fix-center">{{item.AbnormalDate| date: 'dd/MM/yyyy'}}</td>
+              <td class="fix-center">
+                <div *ngFor="let reason of item.AbnormalReason; let i = index">
+                  <span *ngIf="i < item.AbnormalReason.length - 1">{{ reason.Name }}, </span>
+                  <span *ngIf="i >= item.AbnormalReason.length - 1">{{ reason.Name }}</span>
+                </div>
+              </td>
+              <td class="fix-center">{{item.Absent}}</td>
+              <!-- <td style="text-align: center">{{item.CheckIn}}</td>
+              <td style="text-align: center">{{item.CheckOut}}</td>
+              <td style="text-align: center">{{item.Workingtime}} h</td> -->
+              <!-- <td>{{item.Approver}}</td> -->
+              <td class="fix-center">{{item.StatusRequest}}</td>
+              <td>
+                <button *ngIf="hasPermission('EXPLANATION_LIST','create') && canCreateExplanation(item.UserName, item.AbnormalDate, item.StatusRequest)"
+                  type="button" title="Create Explanation" class="btn btn-primary btn-xs" (click)="showCreateExplanationModal(item.ID)">
+                  <i class="fa fa-xs fa-etsy"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table *ngIf="abnormalcase && abnormalcase.length > 0 && !hasPermission('ABNORMALCASE_LIST','readAll')" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Full Name </th>
+              <th>Group</th>
+              <th>Abnormal Date </th>
+              <th>Reason Type</th>
+              <th>Absent Type</th>
+              <!-- <th>Check In</th>
+              <th>Check Out</th>
+              <th>Working Time</th> -->
+              <!-- <th>Approver</th> -->
+              <th>Status Type</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of abnormalcase">
+              <td class="fix-center">{{item.FullName}}</td>
+              <td class="fix-center">{{item.GroupName}}</td>
+              <td class="fix-center">{{item.AbnormalDate| date: 'dd/MM/yyyy'}}</td>
+              <td>
+                <!-- <div *ngFor="let reason of item.AbnormalReason">
+                    {{reason.Name}}
+                  </div> -->
+                <div *ngFor="let reason of item.AbnormalReason; let i = index" class="fix-center">
+                  <span *ngIf="i < item.AbnormalReason.length - 1">{{ reason.Name }}, </span>
+                  <span *ngIf="i >= item.AbnormalReason.length - 1">{{ reason.Name }}</span>
+                </div>
+              </td>
+              <td class="fix-center">{{item.Absent}}</td>
+              <!-- <td style="text-align: center">{{item.CheckIn}}</td>
+              <td style="text-align: center">{{item.CheckOut}}</td>
+              <td style="text-align: center">{{item.Workingtime}} h</td> -->
+              <!-- <td>{{item.Approver }}
+              </td> -->
+              <td class="fix-center">{{item.StatusRequest}}</td>
+              <td>
+                <button *ngIf="hasPermission('EXPLANATION_LIST','create') && canCreateExplanation(item.UserName, item.AbnormalDate, item.StatusRequest)"
+                  type="button" title="Create Explanation" class="btn btn-primary btn-xs" (click)="showCreateExplanationModal(item.ID)">
+                  <i class="fa fa-xs fa-etsy"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="abnormalcase && abnormalcase.length == 0" class="col-md-12">
+        <div class="alert alert-info">
+          <strong>Notification!</strong> No data found in system
+        </div>
+      </div>
+      <div *ngIf="abnormalcase && abnormalcase.length > 0" class="col-md-6">
+        <div [ngClass]="!loadsuccess ? 'prevent-click': ''">
+          <pagination [disabled]="!loadsuccess" [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)"
+            [totalItems]="totalRow" [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;"
+            firstText="&laquo;" lastText="&raquo;"></pagination>
+          <img *ngIf="!loadsuccess" class="image-loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+          />
+        </div>
+      </div>
+      <div *ngIf="abnormalcase && abnormalcase.length > 0 && totalRow > 1" class="col-md-6 showPage" style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+      </div>
+      <div *ngIf="abnormalcase && totalRow == 1 " class="col-md-6 showPage" style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #addEditModal="bs-modal" [config]="{'backdrop':'static', 'keyboard': false}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Create Explanation</h4>
+        <button type="button" class="close pull-right" (click)="closePopup(addEditForm)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left input_mask" novalidate #addEditForm="ngForm" *ngIf="entity" (ngSubmit)="saveExplanation(addEditForm, entity.TimeSheetId)">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Title
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+
+              <input class="form-control" [(ngModel)]="explanationObject.Title" name="title" required minlength="10" maxlength="100">
+              <small *ngIf="addEditForm.controls['title']?.hasError('minlength') || addEditForm.controls['title']?.hasError('maxlength')"
+                class="text-danger">
+                Title length must be between 10 to 100 characters!
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Full Name:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.FullName}}" disabled="disabled">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Group:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.GroupName}}" disabled="disabled">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Explanation Date:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.AbnormalDate| date: 'dd/MM/yyyy'}}" disabled="disabled">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12 divfixtitle">Explanation Reason:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <div type="text" class="form-control detail-reason-list" disabled>
+                {{entity.ReasonList}}
+              </div>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="isUnauthorizedLeave">
+            <label class="control-label label-radio col-md-2 col-sm-3 col-xs-12">Actual
+              <span style="color:red">*</span>:</label>
+            <div class="control-radio col-md-5 col-sm-4 col-xs-12">
+              <label class="radio-check">
+                <input type="radio" name="radio" value="Leave" [(ngModel)]="explanationObject.Actual" required> Leave
+                <span class="checkmark"></span>
+              </label>
+            </div>
+            <div class="control-radio col-md-5 col-sm-4 col-xs-12">
+              <label class="radio-check">
+                <input type="radio" name="radio" value="ForgetToCheck" [(ngModel)]="explanationObject.Actual"> Forget to check Fingerprints
+                <span class="checkmark"></span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">OT From:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <input required class="form-control" type="time" #otcheckin="ngModel" [(ngModel)]="OTCheckIn" pattern="[0-9]{1,2}:[0-9]{1,2}"
+                name="otcheckin" disabled="disabled">
+            </div>
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">OT To:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <input required class="form-control" type="time" #otcheckout="ngModel" [(ngModel)]="OTCheckOut" pattern="[0-9]{1,2}:[0-9]{1,2}"
+                name="otcheckout" disabled="disabled">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Description
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <textarea type="text" rows=3 [(ngModel)]="explanationObject.ReasonDetail" required name="reasondetail" #reasondetail="ngModel"
+                minlength="10" maxlength="500" class="form-control"></textarea>
+              <small *ngIf="addEditForm.controls['reasondetail']?.hasError('minlength') || addEditForm.controls['reasondetail']?.hasError('maxlength')"
+                class="text-danger">
+                Description must be between 10 to 500 characters!
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Receiver:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" disabled [settings]="settingReceiver" [options]="groupLeadFilterOptions"
+                [(ngModel)]="chosenGroupLead"></ss-multiselect-dropdown>
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2">
+              <button type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid ||!addsuccess">Add</button>
+              <button type="button" class="btn btn-primary" (click)="resetForm(addEditForm)">Reset</button>
+              <button type="button" (click)="closePopup(addEditForm)" class="btn btn-circle">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

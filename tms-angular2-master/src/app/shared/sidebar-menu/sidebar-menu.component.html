@@ -1,0 +1,15 @@
+<div id="sidebar-menu" class="sidebar">
+  <div class="menu_section">
+    <ul class="nav side-menu" *ngIf="isGroup">
+      <li><a routerLink="/main/home/index"  class="no-child"><i class="fa fa-home"></i> Dashboard</a>
+      </li>
+      <li *ngFor="let item of functions"><a (click)="sideBarClicked($event)"><i class="fa {{item.IconCss}}"></i> {{item.Name}} <span *ngIf="item.ChildFunctions.length>0" class="fa fa-chevron-down" style="float:right"></span></a>
+        <ul class="nav child_menu">
+          <li *ngFor="let subItem of item.ChildFunctions"><a routerLink="{{subItem.URL}}" (click)="sideBarDetailClicked($event)" routerLinkActive="active">{{subItem.Name}}</a></li>
+        </ul>
+      </li>
+
+    </ul>
+  </div>
+</div>
+

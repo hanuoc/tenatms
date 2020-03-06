@@ -1,0 +1,120 @@
+<div class="page-title">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <h3>Time Management
+                <small>Approved OT List</small>
+              </h3>
+        </div>
+      </div>
+</div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div class="row">
+      <div class="form-group">
+        <div class="col-md-2 col-sm-12 col-xs-12 divfixinput" *ngIf="_authenService.hasPermission('OT_LIST','readAllHR')">
+          <ss-multiselect-dropdown  [ngModelOptions]="{standalone: true}" [texts]="FullNameDropdownTexts" [settings]="dropdownSearchFilterSettings"
+            [options]="FullNameOption" [(ngModel)]="FullNameFilter"></ss-multiselect-dropdown>
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+          <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="OTDateTypeDropdownTexts" [settings]="dropdownFilterSettings"
+          [options]="OTDateTypeOption" [(ngModel)]="OTDateTypeFilter"></ss-multiselect-dropdown>
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+          <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="OTTimeTypeDropdownTexts" [settings]="dropdownFilterSettings"
+          [options]="OTTimeTypeOption" [(ngModel)]="OTTimeTypeFilter"></ss-multiselect-dropdown>
+        </div>
+
+        <div class="col-md-3 col-sm-12 col-xs-12 divfixdatetimepicker">
+          <div class="input-group" daterangepicker [options]="daterangepickerOptions" (selected)="selectedDateRangePicker($event, chosenDate)">
+            <span class="form-control uneditable-input" name="daterange">
+              {{ chosenDate.start | date:'dd/M/y' }} - {{ chosenDate.end| date:'dd/M/y' }}
+            </span>
+            <span class="input-group-btn">
+              <a type="button" class="btn btn-default">
+                <i class="glyphicon glyphicon-calendar"></i>
+              </a>
+            </span>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-12 col-xs-12 divfixbutton">
+          <button title="Filter" type="button" class="btn btn-info btn-circle" (click)="filter()">
+            <i class="fa fa-filter"></i>
+          </button>
+          <button title="Reset" type="button" class="btn btn-primary btn-circle" (click)="reset()">
+            <i class="fa fa-undo"></i>
+          </button>
+          <button title="Export Excel" type="button" class="btn btn-primary btn-success" (click)="Export()" *ngIf="_authenService.hasPermission('OT_LIST','readAllHR') && !_authenService.hasPermission('OT_LIST','caseRoleSuperAdmin')">
+              <i class="fa fa-download"></i>
+            </button>
+        </div>
+      </div>
+    </div>
+    <div class="x_title">
+      <div class="clearfix"></div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table *ngIf="otRequest && otRequest.length > 0" class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="pointer" (click)="sort('FullName')">
+                Full Name
+                <i class="fa" [ngClass]="{'fa-sort': column != 'FullName', 
+                  'fa-sort-asc': (column == 'FullName' && isDesc), 
+                  'fa-sort-desc': (column == 'FullName' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th>Account</th>
+            <th class="grouplist">Group</th>
+            <th class="pointer" (click)="sort('OTDate')">
+              OT Date
+              <i class="fa" [ngClass]="{'fa-sort': column != 'OTDate', 
+                'fa-sort-asc': (column == 'OTDate' && isDesc), 
+                'fa-sort-desc': (column == 'OTDate' && !isDesc) }" aria-hidden="true"> </i>
+            </th>
+            <th class="otdatetype">OT Day Type</th>
+            <th class="ottimetype">OT Time Type</th>
+            <th class="checkin">OT Check In</th>
+            <th class="checkout">OT Check Out</th>
+            <th class="workingtime">Working Time</th>
+            <th class="fullnname">Approver</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of otRequest">
+            <td>{{item.FullName}}</td>
+            <td>{{item.UserName}}</td>
+            <td class="grouplist">{{item.GroupName}}</td>
+            <td class="pointer">{{item.OTDate | date: 'dd/MM/yyyy'}}</td>
+            <td class="otdatetype">{{item.NameOTDateType}}</td>
+            <td class="ottimetype">{{item.NameOTDateTime}}</td>
+            <td class="checkin">{{item.OTCheckIn == 'null' ? '' : item.OTCheckIn}}</td>
+            <td class="checkout">{{item.OTCheckOut == 'null' ? '' : item.OTCheckOut}}</td>
+            <td class="workingtime">{{item.WorkingTime}} h</td>
+            <td>{{item.UpdatedByName}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="otRequest && otRequest.length == 0" class="col-md-12">
+      <div class="alert alert-info">
+        <strong> Notification!</strong> No data found in system
+      </div>
+    </div>
+    <div *ngIf="otRequest && otRequest.length > 0" class="col-md-6">
+        <div [ngClass]="!loadsuccess ? 'prevent-click': ''">
+      <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+        [(ngModel)]="pageIndex"  class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+        <img *ngIf="!loadsuccess" class="image-loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="            />        
+        </div>
+    </div>
+    <div *ngIf="otRequest && otRequest.length > 0 && totalRow > 1" class="col-md-6 showPage" style="text-align: right">
+      <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+    </div>
+    <div *ngIf="otRequest && totalRow == 1 " class="col-md-6 showPage" style="text-align: right">
+      <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+    </div>
+  </div>
+</div>
+</div>

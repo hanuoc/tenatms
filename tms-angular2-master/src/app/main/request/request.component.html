@@ -1,0 +1,529 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <h3>Request Management
+        <small>Request List</small>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="clearfix"></div>
+    <div class="x_panel">
+      <div class="row">
+        <div class="form-group divrequest">
+          <!--Admin-->
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixinput" *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll') && _authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin')">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="textCreatorRequest" [settings]="settingAngularMultiSearch"
+              [options]="filterCreatorsSuperAdmin" [(ngModel)]="myCreator"></ss-multiselect-dropdown>
+          </div>
+          <!--/Admin-->
+          <!--Group Lead-->
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixinput" *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll') && !_authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin')">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="textCreatorRequest" [settings]="settingAngularMultiSearch"
+              [options]="filterCreators" [(ngModel)]="myCreator"></ss-multiselect-dropdown>
+          </div>
+          <!--/Group Lead-->
+          <!--Admin-->
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixinput" *ngIf=" _authenService.hasPermission('REQUEST_LIST','readAdmin')">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="textCreatorRequest" [settings]="settingAngularMultiSearch"
+              [options]="filterCreatorsSuperAdmin" [(ngModel)]="myCreator"></ss-multiselect-dropdown>
+          </div>
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="textStatusRequest" [settings]="settingAngularMulti"
+              [options]="filterStatusRequests" [(ngModel)]="myFilterStatusRequests"></ss-multiselect-dropdown>
+          </div>
+          <!--/Admin-->
+          <!--All-->
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="textRequestType" [settings]="settingAngularMulti"
+              [options]="filterRequestTypes" [(ngModel)]="myFilterRequestTypes"></ss-multiselect-dropdown>
+          </div>
+          <!--/Admin-->
+          <!--EntitleDay-->
+          <!--Member-->
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixinput" *ngIf="!_authenService.hasPermission('REQUEST_LIST','readAll')">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="textRequestReasonType" [settings]="settingAngularMulti"
+              [options]="filterRequestReasonTypes" [(ngModel)]="myFilterRequestReasonTypes"></ss-multiselect-dropdown>
+          </div>
+          <!--Group List And Admin-->
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixinput" *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll')">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="textRequestReasonType" [settings]="settingAngularMulti"
+              [options]="filterRequestReasonTypesEntitleDay" [(ngModel)]="myFilterRequestReasonTypes"></ss-multiselect-dropdown>
+          </div>
+          <!--/EntitleDay-->
+          <!--All-->
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixdatetimepicker">
+            <div class="input-group" daterangepicker [options]="daterangepickerOptions" (selected)="selectedDateRangePicker($event, chosenDate)">
+              <span class="form-control uneditable-input dateRange" name="daterange">
+                {{ chosenDate.start | date:'dd/MM/yyyy' }} - {{ chosenDate.end| date:'dd/MM/yyyy' }}
+              </span>
+              <span class="input-group-btn">
+                <a type="button" class="btn btn-default">
+                  <i class="glyphicon glyphicon-calendar"></i>
+                </a>
+              </span>
+            </div>
+          </div>
+          <div class="col-md-1 col col-sm-12 col-xs-12 divfixbutton" *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll') && _authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin')">
+            <button type="button" class="btn btn-info btn-circle" title="Filter" (click)="filter()">
+              <i class="fa fa-filter"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="reset()">
+              <i class="fa fa-undo"></i>
+            </button>
+          </div>
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixbutton" *ngIf="!_authenService.hasPermission('REQUEST_LIST','readAll')">
+            <button type="button" class="btn btn-info btn-circle" title="Filter" (click)="filter()">
+              <i class="fa fa-filter"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="reset()">
+              <i class="fa fa-undo"></i>
+            </button>
+            <button type="button" class="btn btn-success btn-circle" title="Create" *ngIf="_authenService.hasPermission('REQUEST_LIST','create')"
+              (click)="showAddModal()">
+              <i class="fa fa-plus"></i>
+            </button>
+          </div>
+          <div class="col-md-2 col col-sm-12 col-xs-12 divfixbutton" *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll') && !_authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin')">
+            <button type="button" class="btn btn-info btn-circle" title="Filter" (click)="filter()">
+              <i class="fa fa-filter"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="reset()">
+              <i class="fa fa-undo"></i>
+            </button>
+            <button type="button" class="btn btn-success btn-circle" title="Create" *ngIf="_authenService.hasPermission('REQUEST_LIST','create')"
+              (click)="showAddModal()">
+              <i class="fa fa-plus"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-circle" title="Approve Selected" [disabled]="!checkApproveRequest" *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll')"
+              (click)="approvedAllRequest()">
+              <i class="fa fa-check"></i>
+            </button>
+            <button type="button" class="btn btn-danger btn-circle" title="Reject Selected" [disabled]="!checkRejectRequest" *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll')"
+              (click)="rejectedAll()">
+              <i class="fa fa-times"></i>
+            </button>
+            <button type="button" class="btn btn-success btn-circle" title="Delegate Selected" *ngIf="_authenService.hasPermission('DELEGATION_REQUEST_MANAGEMENT','readAll')"
+              [disabled]="!checkDelegateRequest" (click)="delegateAllRequest()">
+              <i class="fa fa-user"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="x_title">
+        <div class="clearfix"></div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table *ngIf="requests && requests.length > 0 && !_authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin') && !_authenService.hasPermission('REQUEST_LIST','readAdmin') "
+          class="table table-striped table-inverse table-bordered">
+          <thead>
+            <tr>
+              <th *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll')" style="width: 1px">
+                <input type="checkbox" name="checkRequest" id="checkboxID" [checked]="isAllChecked()&&isGreater0" (change)="checkAll($event)">
+              </th>
+              <th *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll')" class="pointer titleRequest" (click)="sort('Title')">Title
+                <i class="fa" [ngClass]="{'fa-sort': column != 'Title', 
+                  'fa-sort-asc': (column == 'Title' && isDesc), 
+                  'fa-sort-desc': (column == 'Title' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th *ngIf="!_authenService.hasPermission('REQUEST_LIST','readAll')" class="pointer titleRequestMember" (click)="sort('Title')">Title
+                <i class="fa" [ngClass]="{'fa-sort': column != 'Title', 
+                    'fa-sort-asc': (column == 'Title' && isDesc), 
+                    'fa-sort-desc': (column == 'Title' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll')" class="FullNameRequest">Full Name</th>
+              <th class="RequestType">Request Type</th>
+              <th class="ReasonType">Reason Type</th>
+              <th class="pointer startDate" (click)="sort('StartDate')">Start Date
+                <i class="fa" [ngClass]="{'fa-sort': column != 'StartDate', 
+                  'fa-sort-asc': (column == 'StartDate' && isDesc), 
+                  'fa-sort-desc': (column == 'StartDate' && !isDesc) }" aria-hidden="true"></i>
+              </th>
+              <th class="pointer endDate" (click)="sort('EndDate')">End Date
+                <i class="fa" [ngClass]="{'fa-sort': column != 'EndDate', 
+                  'fa-sort-asc': (column == 'EndDate' && isDesc), 
+                  'fa-sort-desc': (column == 'EndDate' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th class="StatusRequest">Status Type</th>
+              <th class="ActionRequest">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of requests">
+              <td *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll')">
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" [(ngModel)]="item.Checked" [disabled]="!(checkApprove(item) || checkReject(item)|| checkDelegate(item))"
+                      [name]="item.ID" (change)="checkBoxList($event,item)" [ngModelOptions]="{standalone: true}">
+                  </label>
+                </div>
+              </td>
+              <td class="titleModal" (click)="showEditModal(item.ID)">
+                <a>{{item.Title}}</a>
+              </td>
+              <td *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll')">{{item.AppUser.FullName}}</td>
+              <td>{{item.RequestType.Name}}</td>
+              <td>{{item.EntitleDay != null ? item.EntitleDay.HolidayType :item.EntitleDay}}</td>
+              <td>{{item.StartDate | date: 'dd/MM/yyyy'}}</td>
+              <td>{{item.EndDate | date: 'dd/MM/yyyy'}}</td>
+              <td>{{item.StatusRequest.Name}}</td>
+              <td>
+                <!-- <button *ngIf="entity.ID != undefined && isEdit" type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid || isDisable">Update</button> -->
+                <button class="remove-margin btn btn-xs btn-primary" (click)="showUpdateModal(item.ID)" title="Edit" *ngIf='(item.StatusRequest.ID == 1 || item.StatusRequest.ID == 5) && checkCancel(item)'>
+                  <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                </button>
+                <button class="remove-margin btn btn-primary btn-xs" title="Approve" *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll') && checkApprove(item)"
+                  (click)="approvedRequest(item.ID,item.Title,item.AppUser)" [disabled]="!isSuccess">
+                  <i class="fa fa-check" aria-hidden="true"></i>
+                </button>
+                <button class="remove-margin btn btn-danger btn-xs" title="Reject" *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll') && checkReject(item)"
+                  (click)="rejectedRequest(item.ID,item.Title,item.UserId,item.AppUser)">
+                  <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+                <button class="remove-margin btn btn-success btn-xs" title="Delegate" *ngIf="_authenService.hasPermission('DELEGATION_REQUEST_MANAGEMENT','readAll')&&_authenService.hasPermission('REQUEST_LIST','readAll') &&checkDelegate(item)"
+                  (click)="showDelegate(item,false)">
+                  <i class="fa fa-user" aria-hidden="true"></i>
+                </button>
+                <button class="remove-margin btn btn-danger btn-xs" title="Cancel" *ngIf="_authenService.hasPermission('REQUEST_LIST','cancel') &&checkCancel(item)"
+                  (click)="cancelRequest(item.ID, item.Title)">
+                  <i class="fa fa-ban" aria-hidden="true"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table *ngIf="requestssuperadmin && requestssuperadmin.length > 0 && (_authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin') || _authenService.hasPermission('REQUEST_LIST','readAdmin'))"
+          class="table table-striped table-inverse table-bordered">
+          <thead>
+            <tr>
+              <th *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll')" class="pointer titleRequest" (click)="sort('Title')">Title
+                <i class="fa" [ngClass]="{'fa-sort': column != 'Title', 
+                  'fa-sort-asc': (column == 'Title' && isDesc), 
+                  'fa-sort-desc': (column == 'Title' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th *ngIf="!_authenService.hasPermission('REQUEST_LIST','readAll')" class="pointer titleRequestMember" (click)="sort('Title')">Title
+                <i class="fa" [ngClass]="{'fa-sort': column != 'Title', 
+                    'fa-sort-asc': (column == 'Title' && isDesc), 
+                    'fa-sort-desc': (column == 'Title' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll')" class="FullNameRequest">Full Name</th>
+              <th class="RequestType">Request Type</th>
+              <th class="ReasonType">Reason Type</th>
+              <th class="pointer startDate" (click)="sort('StartDate')">Start Date
+                <i class="fa" [ngClass]="{'fa-sort': column != 'StartDate', 
+                  'fa-sort-asc': (column == 'StartDate' && isDesc), 
+                  'fa-sort-desc': (column == 'StartDate' && !isDesc) }" aria-hidden="true"></i>
+              </th>
+              <th class="pointer endDate" (click)="sort('EndDate')">End Date
+                <i class="fa" [ngClass]="{'fa-sort': column != 'EndDate', 
+                  'fa-sort-asc': (column == 'EndDate' && isDesc), 
+                  'fa-sort-desc': (column == 'EndDate' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th class="StatusRequest">Status Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of requestssuperadmin">
+              <td class="titleModal" (click)="showEditModal(item.ID)">
+                <a>{{item.Title}}</a>
+              </td>
+              <td *ngIf="_authenService.hasPermission('REQUEST_LIST','readAll')">{{item.AppUser.FullName}}</td>
+              <td>{{item.RequestType.Name}}</td>
+              <td>{{item.EntitleDay != null ? item.EntitleDay.HolidayType :item.EntitleDay}}</td>
+              <td>{{item.StartDate | date: 'dd/MM/yyyy'}}</td>
+              <td>{{item.EndDate | date: 'dd/MM/yyyy'}}</td>
+              <td>{{item.StatusRequest.Name}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="!_authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin')">
+        <div *ngIf="requests && requests.length == 0" class="col-md-12 col-sm-12 col-xs-12">
+          <div class="alert alert-info">
+            <strong>Notification!</strong> No data found in system
+          </div>
+        </div>
+        <div *ngIf="requests && requests.length > 0" class="col-md-6">
+          <div [ngClass]="!loadsuccess ? 'prevent-click': ''">
+            <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+              [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+              lastText="&raquo;"></pagination>
+            <img *ngIf="!loadsuccess" class="image-loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+            />
+          </div>
+        </div>
+        <div *ngIf="requests && requests.length > 0 && totalRow > 1" class="col-md-6 showPage" style="text-align: right">
+          <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+        </div>
+        <div *ngIf="requests && totalRow == 1" class="col-md-6 showPage" style="text-align: right">
+          <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+        </div>
+      </div>
+      <div *ngIf="_authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin') || _authenService.hasPermission('REQUEST_LIST','readAdmin')">
+        <div *ngIf="requestssuperadmin && requestssuperadmin.length == 0" class="col-md-12 col-sm-12 col-xs-12">
+          <div class="alert alert-info">
+            <strong>Notification!</strong> No data found in system
+          </div>
+        </div>
+        <div *ngIf="requestssuperadmin && requestssuperadmin.length > 0" class="col-md-6">
+          <div [ngClass]="!loadsuccess ? 'prevent-click': ''">
+            <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+              [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+              lastText="&raquo;"></pagination>
+            <img *ngIf="!loadsuccess" class="image-loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+            />
+          </div>
+        </div>
+        <div *ngIf="requestssuperadmin && requestssuperadmin.length > 0 && totalRow > 1" class="col-md-6 showPage" style="text-align: right">
+          <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+        </div>
+        <div *ngIf="requestssuperadmin && totalRow == 1" class="col-md-6 showPage" style="text-align: right">
+          <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal add and edit-->
+<div bsModal #modalAddEdit="bs-modal" [config]="{'backdrop':'static', 'keyboard': false}" class="modal fade" tabindex="-1"
+  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" *ngIf="entity">
+        <h4 *ngIf="entity.ID==undefined" class="modal-title pull-left">Create Request</h4>
+        <h4 *ngIf="entity.ID != null && isEdit" class="modal-title pull-left">Update Request</h4>
+        <h4 *ngIf="checkDisabledControlDetail() && !isEdit" class="modal-title pull-left">Request Detail</h4>
+        <button type="button" class="close pull-right" (click)="hideModal(addEditForm)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #addEditForm="ngForm" (ngSubmit)="saveChanges(addEditForm)" *ngIf="entity">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-4 col-xs-12">Title
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-10 col-sm-8 col-xs-12">
+              <input type="text" #title="ngModel" [(ngModel)]="entity.Title" [disabled]='checkDisabledControlDetail() && !isEdit' required
+                minlength="10" maxlength="100" name="title" class="form-control">
+              <small *ngIf="addEditForm.controls['title']?.hasError('minlength')" class="text-danger">
+                Title length must be between 10 to 100 characters!
+              </small>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-4 col-xs-12">Full Name:</label>
+            <div class="col-md-10 col-sm-8 col-xs-12">
+              <input type="text" #fullname="ngModel" [(ngModel)]="entity.FullName" required minlength="10" name="fullname" class="form-control"
+                disabled="disabled">
+              <small *ngIf="addEditForm.controls['fullname']?.hasError('minlength')" class="text-danger">
+                You must input FullName
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-4 col-xs-12">Group Name:</label>
+            <div class="col-md-4 col-sm-8 col-xs-12">
+              <input type="text" #groupname="ngModel" [(ngModel)]="entity.GroupName" minlength="3" required name="groupname" class="form-control divpopupmarginbutton"
+                disabled="disabled">
+              <small *ngIf="addEditForm.controls['groupname']?.hasError('minlength')" class="text-danger">
+                You must input GroupName
+              </small>
+            </div>
+
+            <label class="control-label col-md-2 col-sm-4 col-xs-12 divstartdateenddate">Start Date-End Date
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-4 col-sm-8 col-xs-12">
+              <div class="input-group" daterangepicker *ngIf='entity.ID == null && !isEdit' [options]="daterangepickerOptions" (selected)="selectedAddRequestDatePicker($event, chosenRequestDate) ">
+                <span class="form-control uneditable-input" name="entity.StartDate">
+                  {{ chosenRequestDate.start | date:'dd/MM/yyyy' }} - {{ chosenRequestDate.end| date:'dd/MM/yyyy' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+              <div class="input-group" daterangepicker *ngIf='!checkDisabledControlDetail || isEdit' [options]="daterangepickerOptions"
+                (selected)="selectedAddRequestDatePicker($event, chosenRequestDate)">
+                <span class="form-control uneditable-input" name="entity.StartDate">
+                  {{ chosenRequestDate.start | date:'dd/MM/yy' }} - {{ chosenRequestDate.end| date:'dd/MM/yy' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+              <div class="input-group" *ngIf='checkDisabledControlDetail() && !isEdit'>
+                <span class="form-control uneditable-input" name="entity.StartDate" disabled='checkDisabledControlDetail()'>
+                  {{ chosenRequestDate.start | date:'dd/MM/yy' }} - {{ chosenRequestDate.end| date:'dd/MM/yy' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-4 col-xs-12">Request Type
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-4 col-sm-8 col-xs-12 divpopupmarginbutton">
+              <ss-multiselect-dropdown required name="requestTypeId" [disabled]='checkDisabledControlDetail() && !isEdit' (ngModelChange)="onChange($event)"
+                [settings]="settingAngularSingle" [texts]="textRequestType" [options]="filterRequestTypes" #requestTypeId="ngModel"
+                [(ngModel)]="entity.RequestTypeId"></ss-multiselect-dropdown>
+              <small [hidden]="requestTypeId.valid || (requestTypeId.pristine && !addEditForm.submitted)" class="text-danger">
+              </small>
+            </div>
+            <label class="control-label col-md-2 col-sm-4 col-xs-12 divstartdateenddate">Reason Type
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-4 col-sm-8 col-xs-12">
+              <!--Hiển Thị Detail-->
+              <div *ngIf="!isCreateAndUpdate">
+                <ss-multiselect-dropdown [disabled]="!isSelectRequestType || checkDisabledControlDetail() && !isEdit" name="entitleDayId"
+                  [ngModelOptions]="{standalone: true}" [texts]="textRequestReasonType" [settings]="settingAngularSingle" [options]="filterRequestReasonTypesEntitleDay"
+                  [(ngModel)]="entity.EntitleDayId"></ss-multiselect-dropdown>
+                <input type="hidden" [(ngModel)]="entity.EntitleDayId" name="entitleDayId" class="form-control" />
+              </div>
+
+              <!--Hiển Thị Create and Update-->
+              <div *ngIf="isCreateAndUpdate">
+                <ss-multiselect-dropdown [disabled]="!isSelectRequestType || checkDisabledControlDetail() && !isEdit" name="entitleDayId"
+                  [ngModelOptions]="{standalone: true}" [texts]="textRequestReasonType" [settings]="settingAngularSingle" [options]="filterRequestReasonTypes"
+                  [(ngModel)]="entity.EntitleDayId"></ss-multiselect-dropdown>
+                <input type="hidden" [(ngModel)]="entity.EntitleDayId" name="entitleDayId" class="form-control" />
+              </div>
+
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-4 col-xs-12">Detail Reason:</label>
+            <div class="col-md-10 col-sm-8 col-xs-12">
+              <textarea type="text" #detailReason="ngModel" [disabled]='checkDisabledControlDetail() && !isEdit' rows=2 [(ngModel)]="entity.DetailReason"
+                name="detailReason" class="form-control" maxlength="500"></textarea>
+            </div>
+          </div>
+          <div *ngIf="checkDisabledControlDetail()" class="form-group">
+            <label class="control-label col-md-2 col-sm-4 col-xs-12">Status:</label>
+            <div class="col-md-10 col-sm-8 col-xs-12">
+              <input type="text" #statusName="ngModel" [(ngModel)]="entity.StatusRequest.Name" required minlength="10" name="statusName"
+                class="form-control" disabled="disabled">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-4 col-xs-12">Receiver:</label>
+            <div class="col-md-4 col-sm-8 col-xs-12">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [disabled]="true" [settings]="settingAngularSingle" [options]="listGrantUser"
+                [(ngModel)]="groupLeadFilter"></ss-multiselect-dropdown>
+            </div>
+            <div *ngIf='entity.ID !=null'>
+              <label class="control-label col-md-2 col-sm-4 col-xs-12">Created Date:</label>
+              <div class="col-md-4 col-sm-8 col-xs-12">
+                <div class="input-group">
+                  <span class="form-control uneditable-input" name="entity.CreatedDate" disabled='checkDisabledControlDetail() && !isEdit'>
+                    {{ chosenCreateDate.start | date:'dd/MM/yyyy' }}
+                  </span>
+                  <span class="input-group-btn">
+                    <a type="button" class="btn btn-default">
+                      <i class="glyphicon glyphicon-calendar"></i>
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div *ngIf='entity.ID == null' class="form-group">
+              <label class="control-label col-md-2 col-sm-4 col-xs-12">Mail CC:</label>
+              <div class="col-md-4 col-sm-8 col-xs-12">
+                <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="FullNameDropdownTexts" [settings]="dropdownSearchFilterSettings"
+                  [options]="FullNameOption" [(ngModel)]="FullNameFilter" [disabled]='checkDisabledControlDetail()'></ss-multiselect-dropdown>
+              </div>
+            </div>
+
+          </div>
+          <div *ngIf="checkDisabledControlDetail() && entity.FullNameDelegate != null" class="form-group">
+            <label class="control-label col-md-2 col-sm-4 col-xs-12">Delegate To:</label>
+            <div class="col-md-10 col-sm-8 col-xs-12">
+              <input type="text" #delegateName="ngModel" [(ngModel)]="entity.FullNameDelegate" name="delegateName" class="form-control"
+                disabled="disabled">
+            </div>
+          </div>
+          <div *ngIf="entity.ID != null && checkShowAprroved(entity)" class="form-group">
+            <label class="control-label col-md-2 col-sm-4 col-xs-12">Approver/Rejecter:</label>
+            <div class="col-md-4 col-sm-8 col-xs-12">
+              <input type="text" #aproveReject="ngModel" [(ngModel)]="entity.AppUserChangeStatus.FullName" name="aproveReject" class="form-control"
+                [disabled]='checkDisabledControlDetail()'>
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-10 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-4" *ngIf="!_authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin')">
+              <button *ngIf="entity.ID != undefined && !isEdit && (checkCancel(entity) || checkDelegate(entity)) && (entity.StatusRequest.ID == 1 || entity.StatusRequest.ID == 5) && isUser && !checkEditPendding(entity)"
+                type="button" class="btn btn-success" (click)="showEditRequest()">Edit</button>
+              <button *ngIf="entity.ID != undefined && isEdit" type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid || isDisable">Update</button>
+              <button *ngIf="entity.ID != undefined && isEdit" type="button" (click)="showResetModal(entity.ID)" class="btn btn-primary">Reset</button>
+              <button *ngIf="entity.ID != undefined && _authenService.hasPermission('REQUEST_LIST','readAll')&& !isEdit &&checkApprove(entity)"
+                type="button" (click)="approvedRequest(entity.ID,entity.Title,entity.AppUser)" class="btn btn-primary">Approve</button>
+              <button *ngIf="entity.ID != undefined && _authenService.hasPermission('REQUEST_LIST','readAll')&& !isEdit &&checkReject(entity)"
+                type="button" (click)="rejectedRequest(entity.ID,entity.Title,entity.UserId,entity.AppUser)" class="btn btn-danger">Reject</button>
+              <button *ngIf="entity.ID != undefined && _authenService.hasPermission('REQUEST_LIST','readAll')&& !isEdit &&checkDelegate(entity)"
+                type="button" (click)="showDelegate(entity.ID,false)" class="btn btn-success">Delegate</button>
+              <button *ngIf="entity.ID != undefined && checkCancel(entity) && !isEdit" type="button" (click)="cancelRequest(entity.ID,entity.Title)"
+                class="btn btn-danger">Cancel</button>
+              <button type="submit" *ngIf="entity.ID==undefined" class="btn btn-success" [disabled]="!addEditForm.form.valid || isDisable">Add</button>
+              <button type="button" *ngIf="entity.ID==undefined" (click)="requestReset(addEditForm)" class="btn btn-primary">Reset</button>
+              <button type="button" class="btn btn-circle" (click)="hideModal(addEditForm)">Close</button>
+            </div>
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3" *ngIf="_authenService.hasPermission('REQUEST_LIST','caseRoleSuperAdmin')">
+              <button type="button" class="btn btn-circle" (click)="hideModal(addEditForm)">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal delegate-->
+<div bsModal #modalDelegate="bs-modal" class="modal fade modal-admin" id="testModal" style="display: none;" tabindex="-1"
+  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content delegate-modal">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Delegate request</h4>
+        <button type="button" class="close pull-right" (click)="modalDelegate.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #delegateForm="ngForm" (ngSubmit)="saveDelegate(delegateForm.valid)">
+          <div class="form-group">
+            <label class="control-label col-md-4  col-sm-4 col-xs-12">Select delegate
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-7 col-sm-7 col-xs-12">
+              <ss-multiselect-dropdown required name="delegateUserId" [settings]="settingAngularSingleSearch" [texts]="textDelegatorRequest"
+                [options]="filterDelegator" #delegateUserId="ngModel" [(ngModel)]="myFilterDelegators"></ss-multiselect-dropdown>
+              <small [hidden]="myFilterDelegators.valid || (myFilterDelegators.pristine && !delegateForm.submitted)" class="text-danger">
+              </small>
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="delegate-action-button">
+              <button type="submit" class="btn btn-success" [disabled]="!delegateForm.form.valid">Save</button>
+              <button type="button" class="btn btn-circle" (click)="closeForm(modalDelegate)">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

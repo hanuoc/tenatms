@@ -1,0 +1,159 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <h3>Holiday Management
+        <small>Holiday List</small>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="clearfix"></div>
+    <div class="x_panel">
+      <div class="">
+        <div class="row">
+          <div class="form-group">
+            <div class="col-md-2 col-sm-6 col-xs-12 form-group">
+            </div>
+            <div class="col-md-2 col-sm-6 col-xs-12 form-group">
+            </div>
+            <div class="col-md-2 col-sm-6 col-xs-12 form-group">
+            </div>
+            <div class="col-md-3 col-sm-12 col-xs-12 form-group">
+            </div>
+            <div class="col-md-3 col-sm-12 col-xs-12" style="text-align :right">
+              <button type="button" *ngIf="isCreate" class="btn btn-success btn-circle" title="Create"
+                (click)="showAddModal(addEditForm)">
+                <i class="fa fa-plus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="x_title">
+          <div class="clearfix"></div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="table table-bordered" *ngIf="holidaylist && holidaylist.length > 0">
+            <thead>
+              <tr>
+                <th  style="width: 50%" >Name</th>
+                <th style="width: 20%">Date</th>
+                <th style="width: 20%">Date Offset</th>
+                <th *ngIf="isViewDetail" style="width: 10%">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of holidaylist">
+                <td class="abc">{{item.Note}}</td>
+                <td>{{item.Date | date : 'dd/MM/yyyy'}}</td>
+                <td >{{item.Workingday | date : 'dd/MM/yyyy'}}</td>
+                <td *ngIf="isViewDetail">
+                  <button class="btn btn-default btn-xs btn-primary" *ngIf="isUpdate" title="Edit"
+                    (click)="showEditModal(addEditForm,item.ID)">
+                    <i class="fa fa-pencil-square-o" aria-hidden="true" style="color:white"></i>
+                  </button>
+                  <button class="btn btn-default btn-xs btn-danger" *ngIf="isDelete" title="Delete"
+                    (click)="delete(item.ID)">
+                    <i class="fa fa-trash" aria-hidden="true" style="color:white"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="holidaylist && totalRow == 0" class="col-md-12">
+          <div class="alert alert-info">
+            <strong> Notification!</strong> No data found in system
+          </div>
+        </div>
+        <div *ngIf="holidaylist && totalRow > 0" class="col-md-6">
+          <div [ngClass]="!loadsuccess ? 'newclass': ''">
+            <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize"
+              (pageChanged)="pageChanged($event)" [totalItems]="totalRow" [(ngModel)]="pageIndex" class="pagination-sm"
+              previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+            <img *ngIf="!loadsuccess" class="image-loading"
+              src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+          </div>
+        </div>
+        <div *ngIf="holidaylist && holidaylist.length > 0 && totalRow > 1" class="col-md-6 showPage"
+          style="text-align: right">
+          <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+        </div>
+        <div *ngIf="holidaylist && totalRow == 1 " class="col-md-6 showPage" style="text-align: right">
+          <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Show modal -->
+<!--Modal add and edit-->
+<div bsModal #modalAddEdit="bs-modal" [config]="{'backdrop':'static', 'keyboard': false}" class="modal fade"
+  tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left" *ngIf="!stateCreate">Update Holiday</h4>
+        <h4 class="modal-title pull-left" *ngIf="stateCreate">Create Holiday</h4>
+        <button type="button" class="close pull-right" (click)="hideModal(addEditForm)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #addEditForm="ngForm"
+          (ngSubmit)="saveData(addEditForm)" *ngIf="entity">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Name:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" #Note="ngModel" maxlength="255" [(ngModel)]="entity.Note" name="Note" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Date
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <div class="input-group" daterangepicker [options]="daterangeOptions"
+                (selected)="selectedDatePickerDate($event)">
+                <span class="form-control uneditable-input"name="datepicker">
+                  {{ entity.Date | date:'dd/MM/yyyy' }}
+                </span>
+                <span class="input-group-btn" disabled>
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Date Offset</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <div class="input-group"  daterangepicker [options]="daterangeOptions1"
+                (selected)="selectedDatePicker($event)">
+                <span class="form-control uneditable-input" name="datepicker">
+                  {{ entity?.Workingday | date:'dd/MM/yyyy' }}
+                </span>
+                <span class="input-group-btn" disabled>
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2">
+              <button type="submit" *ngIf="stateCreate" class="btn btn-success" [disabled]="entity.Date == null">Add</button>
+              <button type="submit" *ngIf="!stateCreate" class="btn btn-success" [disabled]="entity.Date == null">Update</button>
+              <button type="button" (click)="resetForm(addEditForm)" class="btn btn-primary">Reset</button>
+              <button type="button" type="button" (click)="hideModal(addEditForm)" class="btn btn-circle">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

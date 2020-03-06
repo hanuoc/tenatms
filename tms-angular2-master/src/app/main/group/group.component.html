@@ -1,0 +1,298 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <h3>System Management
+        <small>Group List</small>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div>
+      <div class="row">
+        <div class="form-group">
+          <div class="col-md-3 col-sm-12 col-xs-12 col-md-offset-9" style="text-align:right;">
+            <button type="button" class="btn btn-success btn-circle" title="Create" (click)="createGroup(addEditForm)" *ngIf="_authenService.hasPermission('GROUP_LIST','readAdmin')">
+              <i class="fa fa-plus"></i>
+            </button>
+            <button type="button" title="Delete Selected" class="btn btn-danger btn-circle" (click)="deleteMulti()" [disabled]="!checkButton" *ngIf="_authenService.hasPermission('GROUP_LIST','readAdmin')">
+              <i class="fa fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="x_title">
+        <div class="clearfix"></div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table *ngIf="listGroup && listGroup.length > 0 &&_authenService.hasPermission('GROUP_LIST','readAdmin')" class="table table-bordered" style="overflow-y:auto;">
+          <thead>
+            <tr>
+              <th class="checkboxfield">
+                <input type="checkbox" (change)="checkAll($event)" [checked]="isAllChecked()">
+              </th>
+              <th >Group Name</th>
+              <th >Group Lead</th>
+              <th >Account</th>
+              <th>Description</th>
+              <th >Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of listGroup">
+              <td class="checkboxfield">
+                <input type="checkbox" [(ngModel)]="item.Checked" [name]="item.ID" (check)="item.Checked" (change)="CheckboxChange(item,$event)">
+              </td>
+              <td class="name-field titleModal" style="width:200px" (click)="editGroup(item,false)"><a>{{item.Name}}</a></td>
+              <td class="leader-field" style="width:200px">{{item.GroupLead}}</td>
+              <td class="leader-account-field" style="width:200px">{{item.GroupLeadAccount}}</td>
+              <td class="description-field description-overflow" style="width:350px">{{item.Description}}</td>
+              <td class="action-field" style="width:68px ">
+                <button class="btn btn-default btn-xs btn-primary" data-placement="top" title="Edit" type="button" *ngIf="_authenService.hasPermission('GROUP_LIST','readAdmin')" (click)="editGroup(item,true)">
+                  <i class="fa fa-pencil-square-o" aria-hidden="true" style="color:white"></i>
+                </button>
+                <button class="btn btn-default btn-xs btn-danger" data-placement="top" title="Delete" type="button" *ngIf="_authenService.hasPermission('GROUP_LIST','readAdmin')" (click)="delete(item.ID)">
+                  <i class="fa fa-trash" aria-hidden="true" style="color:white"></i>
+                </button>
+                <button class="remove-margin btn btn-success btn-xs" title="Delegate" 
+                  (click)="showDelegate(item)" *ngIf="_authenService.hasPermission('GROUP_LIST','createDelegateGroupLead')">
+                  <i class="fa fa-user" aria-hidden="true"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- If permission is Group Lead -->
+        <table *ngIf="listGroup && listGroup.length > 0 && _authenService.hasPermission('GROUP_LIST','createDelegateGroupLead')" class="table table-bordered groupleadTable" style="overflow-y:auto;">
+          <thead>
+            <tr>
+              <th class="checkboxfield" *ngIf="_authenService.hasPermission('GROUP_LIST','readAdmin')">
+                <input type="checkbox" (change)="checkAll($event)" [checked]="isAllChecked()">
+              </th>
+              <th class="GroupName">Group Name</th>
+              <th class="GroupLead">Group Lead</th>
+              <th class="Account">Account</th>
+              <th class="Description">Description</th>
+              <th class="DelegateTo">Delegated To</th>
+              <th class="StartDate">Start Date</th>
+              <th class="EndDate">End Date</th>
+              <th class="Action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of listGroup">
+              <td class="checkboxfield" *ngIf="_authenService.hasPermission('GROUP_LIST','readAdmin')">
+                <input type="checkbox" [(ngModel)]="item.Checked" [name]="item.ID" (check)="item.Checked" (change)="CheckboxChange(item,$event)">
+              </td>
+              <td class="name-field titleModal" (click)="editGroup(item,false)"><a>{{item.Name}}</a></td>
+              <td class="leader-field">{{item.GroupLead}}</td>
+              <td class="leader-account-field">{{item.GroupLeadAccount}}</td>
+              <td class="description-field description-overflow">{{item.Description}}</td>
+              <td>{{this.fullNameDelegate}}</td>
+              <td>{{item.StartDate  | date: 'dd/MM/yyyy'}}</td>
+              <td>{{item.EndDate  | date: 'dd/MM/yyyy'}}</td>
+              <td class="action-field">
+                <button class="btn btn-default btn-xs btn-primary" data-placement="top" title="Edit" type="button" *ngIf="_authenService.hasPermission('GROUP_LIST','readAdmin')" (click)="editGroup(item,true)">
+                  <i class="fa fa-pencil-square-o" aria-hidden="true" style="color:white"></i>
+                </button>
+                <button class="btn btn-default btn-xs btn-danger" data-placement="top" title="Delete" type="button" *ngIf="_authenService.hasPermission('GROUP_LIST','readAdmin')" (click)="delete(item.ID)">
+                  <i class="fa fa-trash" aria-hidden="true" style="color:white"></i>
+                </button>
+                <button class="remove-margin btn btn-success btn-xs" title="Delegate" 
+                  (click)="showDelegate(item)" *ngIf="_authenService.hasPermission('GROUP_LIST','createDelegateGroupLead')">
+                  <i class="fa fa-user" aria-hidden="true"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+         <!-- If permission is Super Admin -->
+        <table *ngIf="listGroup && listGroup.length > 0 &&_authenService.hasPermission('GROUP_LIST','caseRoleSuperAdmin')" class="table table-bordered" style="overflow-y:auto;">
+          <thead>
+            <tr>
+              <th >Group Name</th>
+              <th >Group Lead</th>
+              <th >Account</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of listGroup">
+                  <td class="name-field titleModal" style="width:200px" (click)="editGroup(item,false)"><a>{{item.Name}}</a></td>
+                  <td class="leader-field" style="width:200px">{{item.GroupLead}}</td>
+                  <td class="leader-account-field" style="width:200px">{{item.GroupLeadAccount}}</td>
+                  <td class="description-field description-overflow" style="width:350px">{{item.Description}}</td>
+              
+            </tr>
+          </tbody>
+        </table>
+
+       
+      </div>
+      <div *ngIf="listGroup && listGroup.length == 0" class="col-md-12">
+        <div class="alert alert-info">
+          <strong>Notification!</strong> No data found in system
+        </div>
+      </div>
+      <div *ngIf="listGroup && listGroup.length > 0" class="col-md-6">
+          <div [ngClass]="!loadsuccess ? 'prevent-click': ''">
+        <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+          [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+          <img *ngIf="!loadsuccess" class="image-loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="            />          
+          </div>
+      </div>
+      <div *ngIf="listGroup && listGroup.length > 0 && totalRow > 1" class="col-md-6 showPage" style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+      </div>
+      <div *ngIf="listGroup && totalRow == 1" class="col-md-6" id="pageStyle" style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<!--Modal add and edit-->
+<div bsModal #modalAddEdit="bs-modal" [config]="{'backdrop':'static', 'keyboard': false}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left" *ngIf="!isUpdate && !isCreate">Group Detail</h4>
+        <h4 class="modal-title pull-left" *ngIf="isUpdate">Update Group</h4>
+        <h4 class="modal-title pull-left" *ngIf="isCreate">Create Group</h4>
+        <button type="button" class="close pull-right" (click)="hideModal(addEditForm)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #addEditForm="ngForm" (ngSubmit)="saveData(addEditForm)">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Group Name
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" name="GroupName" [disabled]="!isUpdate && !isCreate" #GroupName="ngModel" [(ngModel)]="newGroup.Name"  required maxlength="50" minlength="2"
+                class="form-control" (ngModelChange)="onChangeGroupName($event)">
+              <small *ngIf="addEditForm.controls['GroupName']?.hasError('minlength')" class="text-danger">
+                Group name length must be between 2 to 50 characters!
+              </small>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!isUpdate && !isCreate">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Group Lead
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" name="GroupLeadDetail" [disabled]="!isUpdate && !isCreate" #GroupLeadDetail="ngModel" [(ngModel)]="newGroup.GroupLead"
+              class="form-control">
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!isUpdate && !isCreate">
+              <label class="control-label col-md-2 col-sm-3 col-xs-12">Account
+                <span style="color:red">*</span>:</label>
+              <div class="col-md-10 col-sm-9 col-xs-12">
+                <ss-multiselect-dropdown *ngIf="!isUpdate" [disabled]="!isUpdate" name="GroupLeadDropDown" [texts]="GroupLeadDropdownTexts" [settings]="dropdownSearchSettings"
+                  [options]="usersOption" #GroupLeadDropDown="ngModel"  [(ngModel)]="groupLeadIDSelected" (ngModelChange)="onChange($event)"
+                  required></ss-multiselect-dropdown>
+                <!-- <input type="hidden" name="hiddenInput" #hiddenInput="ngModel" [(ngModel)]="groupLeadIDSelected" required class="form-control"> -->
+                <small *ngIf="addEditForm.controls['hiddenInput']?.hasError('required') && count>1 && (isCreate||isUpdate)" class="text-danger">
+                  Required choose account !
+                </small>
+              </div>
+          </div>
+           
+          <div class="form-group" *ngIf="isCreate||isUpdate">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Account
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <ss-multiselect-dropdown *ngIf="isCreate" name="GroupLeadDropDown" [texts]="GroupLeadDropdownTexts" [settings]="dropdownSearchSettings"
+                [options]="usersOptionCreate" #GroupLeadDropDown="ngModel"  [(ngModel)]="groupLeadIDSelected" (ngModelChange)="onChange($event)"
+                required></ss-multiselect-dropdown>
+              <ss-multiselect-dropdown *ngIf="isUpdate" name="GroupLeadDropDown" [texts]="GroupLeadDropdownTexts" [settings]="dropdownSearchSettings"
+                [options]="usersOptionUpdate" #GroupLeadDropDown="ngModel"  [(ngModel)]="groupLeadIDSelected" (ngModelChange)="onChange($event)"
+                required></ss-multiselect-dropdown>
+              <input type="hidden" name="hiddenInput" #hiddenInput="ngModel" [(ngModel)]="groupLeadIDSelected" required class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Description:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <textarea type="text" rows=2 [disabled]="!isUpdate && !isCreate" name="GroupDescription" class="form-control" #GroupDescription="ngModel" 
+              [(ngModel)]="newGroup.Description"
+                maxlength="500"></textarea>
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2">
+              <button *ngIf="!isUpdate && !isCreate &&_authenService.hasPermission('GROUP_LIST','readAdmin')" type="button" (click)="edit()"  class="btn btn-primary" >Edit</button>
+              <button *ngIf="!isUpdate && !isCreate && _authenService.hasPermission('GROUP_LIST','readAdmin')" type="button" (click)="delete(newGroup.ID)" class="btn btn-danger">Delete</button>
+              <button *ngIf="isCreate" type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid||groupLeadIDSelected[0]==null">Add</button>
+              <button *ngIf="isUpdate" type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid">Update</button>
+              <button *ngIf="isCreate||isUpdate" type="button" (click)="resetForm(addEditForm)" class="btn btn-primary">Reset</button>
+              <button type="button" type="button" (click)="hideModal(addEditForm)" class="btn btn-circle">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal delegate-->
+<div bsModal #modalDelegate="bs-modal" class="modal fade modal-admin" id="testModal" style="display: none;" tabindex="-1"
+  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content delegate-modal">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Set Delegate Default</h4>
+        <button type="button" class="close pull-right" (click)="modalDelegate.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #delegateForm="ngForm" (ngSubmit)="saveDelegate(delegateForm.valid)">
+          <div class="form-group">
+            <label class="control-label col-md-4  col-sm-4 col-xs-12">Select delegate
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-7 col-sm-7 col-xs-12">
+              <ss-multiselect-dropdown required name="delegateUserId" [settings]="settingAngularSingleSearch" [texts]="textDelegatorRequest"
+                [options]="filterDelegator" #delegateUserId="ngModel" [(ngModel)]="myFilterDelegators"></ss-multiselect-dropdown>
+              <small [hidden]="myFilterDelegators.valid || (myFilterDelegators.pristine && !delegateForm.submitted)" class="text-danger">
+              </small>
+            </div>
+          </div>
+          <div class= "form-group">
+            <label class="control-label col-md-4  col-sm-4 col-xs-12">Start Date - End Date
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-7 col-sm-7 col-xs-12">
+              <div class="input-group" daterangepicker  [options]="daterangepickerOptions" (selected)="selectedAddRequestDatePicker($event, chosenRequestDate)">
+                <span class="form-control uneditable-input" name="entity.StartDate">
+                  {{ chosenRequestDate.start | date:'dd/MM/yy' }} - {{ chosenRequestDate.end| date:'dd/MM/yy' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+             
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="delegate-action-button">
+              <button type="submit" class="btn btn-success" [disabled]="!delegateForm.form.valid">Save</button>
+              <button type="button" class="btn btn-primary" [disabled] = "!this.isDisableResetButton" (click)="resetDelegate()">Reset</button>
+              <button type="button" class="btn btn-circle" (click)="closeForm(modalDelegate)">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

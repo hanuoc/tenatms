@@ -1,0 +1,50 @@
+/* CSS for modal set delegate */
+.modal-admin {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 580px;
+  }
+  .delegate-modal{
+    max-width: 580px!important;
+  }
+  .delegate-action-button{
+    text-align: right;
+    margin-right: 58px;
+  }
+/* end CSS for modal set delegate */
+  .colorRed{
+    color:red;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  overflow-x: auto;
+  white-space: nowrap;
+  word-break: break-all;
+  max-width: 300px;
+  text-overflow: ellipsis;
+  text-align: left;
+  overflow:hidden;
+}
+
+@media only screen and (max-width: 1368px) {
+  .table td:nth-of-type(1) {width: 280px; min-width: 280px; max-width: 280px;}
+  .table td:nth-of-type(2) {width: 150px; min-width: 150px; max-width: 150px;}
+  .table td:nth-of-type(3) {width: 280px; min-width: 280px; max-width: 280px;}
+  .table td:nth-of-type(4) {width: 150px; min-width: 150px; max-width: 150px;}
+  .table td:nth-of-type(5) {width: 150px; min-width: 150px; max-width: 150px;}
+  .table td:nth-of-type(6) {width: 50px; min-width: 50px; max-width: 50px;}
+    }
+  
+@media only screen and (min-width: 1368px) {
+  .table td:nth-of-type(1) {width: 320px; min-width: 320px; max-width: 320px;}
+  .table td:nth-of-type(2) {width: 150px; min-width: 150px; max-width: 150px;}
+  .table td:nth-of-type(3) {width: 320px; min-width: 320px; max-width: 320px;}
+  .table td:nth-of-type(4) {width: 150px; min-width: 150px; max-width: 150px;}
+  .table td:nth-of-type(5) {width: 150px; min-width: 150px; max-width: 150px;}
+  .table td:nth-of-type(6) {width: 50px; min-width: 50px; max-width: 50px;}
+}

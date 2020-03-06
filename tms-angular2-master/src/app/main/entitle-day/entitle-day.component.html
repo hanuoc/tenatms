@@ -1,0 +1,253 @@
+<div class="page-title">
+  <div class="title_left">
+    <h3>Time Management
+      <small>Entitle Day List</small>
+    </h3>
+  </div>
+  <div class="title_right">
+    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+      <div class="input-group">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="clearfix"></div>
+    <div class="x_panel">
+      <div class="row" *ngIf="_authenService.hasPermission('ENTITLEDAY_LIST','readAllAdmin')">
+        <div class="form-group">
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="FullNameDropdownTexts" [settings]="dropdownSearchFilterSettings"
+              [options]="FullNameOption" [(ngModel)]="FullNameFilter"></ss-multiselect-dropdown>
+          </div>
+          <div class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="OTDateTypeDropdownTexts" [settings]="dropdownSettings"
+              [options]="DayOffTypeOption" [(ngModel)]="chosenType"></ss-multiselect-dropdown>
+          </div>
+          <div class="col-md-3 col-sm-12 col-xs-12 divfixbutton" *ngIf="!_authenService.hasPermission('ENTITLEDAY_LIST','caseRoleSuperAdmin')">
+            <button title="Filter" type="button" class="btn btn-info btn-circle" (click)="filter()">
+              <i class="fa fa-filter"></i>
+            </button>
+            <button title="Reset" type="button" class="btn btn-primary btn-circle" (click)="reset()">
+              <i class="fa fa-undo"></i>
+            </button>
+            <button title="Export Excel" type="button" class="btn btn-primary btn-success" (click)="Export()">
+              <i class="fa fa-download"></i>
+            </button>
+          </div>
+          <div class="col-md-3 col-sm-12 col-xs-12 divfixbutton"  *ngIf="_authenService.hasPermission('ENTITLEDAY_LIST','caseRoleSuperAdmin')">
+              <button title="Filter" type="button" class="btn btn-info btn-circle" (click)="filter()">
+                <i class="fa fa-filter"></i>
+              </button>
+              <button title="Reset" type="button" class="btn btn-primary btn-circle" (click)="reset()">
+                <i class="fa fa-undo"></i>
+              </button>
+            </div>
+        </div>
+      </div>
+      <div class="x_title">
+        <div class="clearfix"></div>
+      </div>
+      <div style="overflow-x:auto;">
+
+        <table *ngIf="entitleday && entitleday.length > 0 && !_authenService.hasPermission('ENTITLEDAY_LIST','readAllGeneralAdmin')" class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="pointer" (click)="sort('FullName')">
+                Full Name
+                <i *ngIf="_authenService.hasPermission('ENTITLEDAY_LIST','readAllAdmin')" class="fa" [ngClass]="{'fa-sort': column != 'FullName', 
+                  'fa-sort-asc': (column == 'FullName' && isDesc), 
+                  'fa-sort-desc': (column == 'FullName' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th>Account</th>
+              <th class="pointer" (click)="sort('HolidayType')">
+                Day Off Type
+                <i class="fa" [ngClass]="{'fa-sort': column != 'HolidayType', 
+                    'fa-sort-asc': (column == 'HolidayType' && isDesc), 
+                    'fa-sort-desc': (column == 'HolidayType' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th>Unit</th>
+              <th>Total</th>
+              <th>Approved</th>
+              <th>Remain</th>
+              <th *ngIf="_authenService.hasPermission('ENTITLEDAY_LIST','readAllAdmin')">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of entitleday">
+              <td>{{item.FullName}}</td>
+              <td>{{item.UserName}}</td>
+              <td>{{item.HolidayType}}</td>
+              <td>{{item.UnitType}}</td>
+              <td class="entitleday-center">{{item.MaxEntitleDay}}</td>
+              <td class="entitleday-center">{{item.NumberDayOff}}</td>
+              <td class="entitleday-center">{{item.RemainDayOff}}</td>
+              <td *ngIf="_authenService.hasPermission('ENTITLEDAY_LIST','readAllAdmin')">
+                <button *ngIf="item.UnitType == 'Day'" class="btn btn-default btn-xs btn-primary" (click)="showEditModal(item.EntitleDayAppUserId)"
+                  title="Edit">
+                  <i class="fa fa-pencil-square-o" aria-hidden="true" style="color:white"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table *ngIf="entitleday && entitleday.length > 0 && _authenService.hasPermission('ENTITLEDAY_LIST','readAllGeneralAdmin')"
+          class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="pointer" (click)="sort('FullName')">
+                Full Name
+                <i class="fa" [ngClass]="{'fa-sort': column != 'FullName', 
+                    'fa-sort-asc': (column == 'FullName' && isDesc), 
+                    'fa-sort-desc': (column == 'FullName' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th>Account</th>
+              <th class="pointer" (click)="sort('HolidayType')">
+                Day Off Type
+                <i class="fa" [ngClass]="{'fa-sort': column != 'HolidayType', 
+                      'fa-sort-asc': (column == 'HolidayType' && isDesc), 
+                      'fa-sort-desc': (column == 'HolidayType' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th>Unit</th>
+              <th>Total</th>
+              <th>Approved</th>
+              <th>Remain</th>
+              <!-- <th *ngIf="_authenService.hasPermission('ENTITLEDAY_LIST','readAllAdmin')">Action</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of entitleday">
+              <td>{{item.FullName}}</td>
+              <td>{{item.UserName}}</td>
+              <td>{{item.HolidayType}}</td>
+              <td>{{item.UnitType}}</td>
+              <td class="entitleday-center">{{item.MaxEntitleDay}}</td>
+              <td class="entitleday-center">{{item.NumberDayOff}}</td>
+              <td class="entitleday-center">{{item.RemainDayOff}}</td>
+              <!-- <td *ngIf="_authenService.hasPermission('ENTITLEDAY_LIST','readAllAdmin')">
+                  <button *ngIf="item.UnitType == 'Day'" class="btn btn-default btn-xs btn-primary" (click)="showEditModal(item.EntitleDayAppUserId)"
+                    title="Edit">
+                    <i class="fa fa-pencil-square-o" aria-hidden="true" style="color:white"></i>
+                  </button>
+                </td> -->
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <div *ngIf="entitleday && entitleday.length == 0" class="col-md-12">
+        <div class="alert alert-info">
+          <strong> Notification!</strong> No data found in system
+        </div>
+      </div>
+      <div *ngIf="entitleday && entitleday.length > 0" class="col-md-6">
+        <div [ngClass]="!loadsuccess ? 'newclass': ''">
+          <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+            [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+          <img *ngIf="!loadsuccess" class="image-loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+          />
+        </div>
+      </div>
+      <div *ngIf="entitleday && entitleday.length > 0 && totalRow > 1" class="col-md-6 showPage" style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+      </div>
+      <div *ngIf="entitleday && totalRow == 1 " class="col-md-6 showPage" style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal add and edit -->
+<div bsModal #modalAddEdit="bs-modal" [config]="{'backdrop':'static', 'keyboard': false}" class="modal fade" tabindex="-1"
+  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left" *ngIf="!isCreate">Update Entitle Day List</h4>
+        <button type="button" class="close pull-right" (click)="hideModal(addEditForm)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div></div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #addEditForm="ngForm" (ngSubmit)="saveData(addEditForm)" *ngIf="entity">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Full Name
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" #FullName="ngModel" [(ngModel)]="entity.FullName" disabled required name="FullName" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Account
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" #UserName="ngModel" [(ngModel)]="entity.UserName" disabled required name="UserName" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Day Off Type
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" #HolidayType="ngModel" [(ngModel)]="entity.HolidayType" disabled required name="HolidayType" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Unit
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" #UnitType="ngModel" [(ngModel)]="entity.UnitType" disabled required name="UnitType" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Total
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" #MaxEntitleDay="ngModel" [(ngModel)]="entity.MaxEntitleDay" name="MaxEntitleDay" class="form-control"
+                minlength="1" maxlength="5" required pattern="(^([0-9]*)\d+([.][05])?){1,5}$">
+              <small *ngIf="addEditForm.controls['MaxEntitleDay'].hasError('pattern')" class="text-danger">
+                Please enter numbers only!
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Approved
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" class="form-control" #NumberDayOff="ngModel" [(ngModel)]="entity.NumberDayOff" name="NumberDayOff" step="0.5"
+                min="0" maxlength="5" required pattern="(^([0-9]*)\d+([.][05])?){1,5}$">
+              <small *ngIf="addEditForm.controls['NumberDayOff'].hasError('pattern')" class="text-danger">
+                Please enter a multiple of 0.5; 1- 5 numeric characters in length
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Remain
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" #RemainDayOff="ngModel" [(ngModel)]="entity.RemainDayOff" disabled required name="RemainDayOff" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Note
+              <span style="color:red"></span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <textarea type="text" maxlength="500" #Note="ngModel" rows=2 [(ngModel)]="entity.Note" name="Note" class="form-control"></textarea>
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2">
+              <button title="Update" type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid">Update</button>
+              <button title="Reset" type="button" (click)="resetForm(addEditForm)" class="btn btn-primary">Reset</button>
+              <button title="Close" type="button" type="button" (click)="hideModal(addEditForm)" class="btn btn-circle">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    overflow-x: auto;
+    white-space: nowrap;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    text-align: left;
+    overflow:hidden;
+  }
+@media only screen and (max-width: 1368px) {
+    .table td:nth-of-type(1) {width: 200px; min-width: 200px; max-width: 200px;}
+    .table td:nth-of-type(2) {width: 120px; min-width: 120px; max-width: 120px;}
+    .table td:nth-of-type(3) {width: 79px; min-width: 79px; max-width: 79px;}
+    .table td:nth-of-type(4) {width: 79px; min-width: 79px; max-width: 79px;}
+    .table td:nth-of-type(5) {width: 125px; min-width: 125px; max-width: 125px;}
+    .table td:nth-of-type(6) {width: 125px; min-width: 125px; max-width: 125px;}
+    .table td:nth-of-type(7) {width: 50px; min-width: 50px; max-width: 50px;}
+    
+    }
+
+    @media only screen and (min-width: 1368px) {
+        .table td:nth-of-type(1) {width: 200px; min-width: 200px; max-width: 200px;}
+        .table td:nth-of-type(2) {width: 120px; min-width: 120px; max-width: 120px;}
+        .table td:nth-of-type(3) {width: 79px; min-width: 79px; max-width: 79px;}
+        .table td:nth-of-type(4) {width: 79px; min-width: 79px; max-width: 79px;}
+        .table td:nth-of-type(5) {width: 125px; min-width: 125px; max-width: 125px;}
+        .table td:nth-of-type(6) {width: 125px; min-width: 125px; max-width: 125px;}
+        .table td:nth-of-type(7) {width: 50px; min-width: 50px; max-width: 50px;}
+        
+        }

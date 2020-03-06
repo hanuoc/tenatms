@@ -1,0 +1,122 @@
+
+ table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  .description-overflow {
+    overflow-x: auto;
+    white-space: nowrap;
+    word-break: break-all;
+    max-width: 400px;
+    text-overflow: ellipsis;
+    text-align: left;
+    padding: 8px;
+    overflow:hidden;
+  }
+  tr:nth-child(even){background-color: #f9f9f9}
+
+  .titleModal{
+    cursor: pointer;
+   }
+   .titleModal a{
+     color: #337ab7!important;
+   }
+   .titleModal a:hover{
+   color: black!important;
+   }
+   textarea { 
+    resize:vertical; 
+    resize: none;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    overflow-x: auto;
+    white-space: nowrap;
+    word-break: break-all;
+    max-width: 300px;
+    text-overflow: ellipsis;
+    text-align: left;
+    overflow:hidden;
+  }
+  
+  /* @media only screen and (max-width: 1368px) {
+    .table td:nth-of-type(1) {width: 25px; min-width: 25px; max-width: 25px;}
+    .table td:nth-of-type(2) {width: 200px; min-width: 200px; max-width: 200px;}
+    .table td:nth-of-type(3) {width: 200px; min-width: 200px; max-width: 200px;}
+    .table td:nth-of-type(4) {width: 200px; min-width: 200px; max-width: 200px;}
+    .table td:nth-of-type(5) {width: 280px; min-width: 280px; max-width: 280px;}
+    .table td:nth-of-type(6) {width: 68px; min-width: 68px; max-width: 68px;}
+      }
+    
+      @media only screen and (min-width: 1368px) {
+        .table td:nth-of-type(1) {width: 25px; min-width: 25px; max-width: 25px;}
+        .table td:nth-of-type(2) {width: 200px; min-width: 200px; max-width: 200px;}
+        .table td:nth-of-type(3) {width: 200px; min-width: 200px; max-width: 200px;}
+        .table td:nth-of-type(4) {width: 200px; min-width: 200px; max-width: 200px;}
+        .table td:nth-of-type(5) {width: 325px; min-width: 325px; max-width: 325px;}
+        .table td:nth-of-type(6) {width: 68px; min-width: 68px; max-width: 68px;}
+      } */
+
+  @media only screen and (max-width: 1368px) {
+.table td:nth-of-type(1) {width: 25px; min-width: 25px; max-width: 25px;}
+.table td:nth-of-type(2) {width: 80px; min-width: 80px; max-width: 80px;}
+.table td:nth-of-type(3) {width: 200px; min-width: 200px; max-width: 200px;}
+.table td:nth-of-type(4) {width: 90px; min-width: 90px; max-width: 90px;}
+.table td:nth-of-type(5) {width: 225px; min-width: 225px; max-width: 225px;}
+.table td:nth-of-type(6) {width: 130px; min-width: 130px; max-width: 130px;}
+.table td:nth-of-type(7) {width: 100px; min-width: 100px; max-width: 100px;}
+.table td:nth-of-type(8) {width: 100px; min-width: 100px; max-width: 100px;}
+.table td:nth-of-type(9) {width: 55px; min-width: 55px; max-width: 55px;}
+
+.groupleadTable td:nth-of-type(1) {width: 80px; min-width: 80px; max-width: 80px;}
+.groupleadTable td:nth-of-type(2) {width: 180px; min-width: 180px; max-width: 180px;}
+.groupleadTable td:nth-of-type(3) {width: 80px; min-width: 80px; max-width: 80px;}
+.groupleadTable td:nth-of-type(4) {width: 225px; min-width: 225px; max-width: 225px;}
+.groupleadTable td:nth-of-type(5) {width: 100px; min-width: 100px; max-width: 100px;}
+.groupleadTable td:nth-of-type(6) {width: 100px; min-width: 100px; max-width: 100px;}
+.groupleadTable td:nth-of-type(7) {width: 100px; min-width: 100px; max-width: 100px;}
+.groupleadTable td:nth-of-type(8) {width: 25px; min-width: 25px; max-width: 25px;}
+  }
+
+  @media only screen and (min-width: 1368px) {
+    .table td:nth-of-type(1) {width: 25px; min-width: 25px; max-width: 25px ;}
+    .table td:nth-of-type(2) {width: 80px; min-width: 80px; max-width: 80px;}
+    .table td:nth-of-type(3) {width: 200px; min-width: 200px; max-width: 200px;}
+    .table td:nth-of-type(4) {width: 100px; min-width: 100px; max-width: 100px;}
+    .table td:nth-of-type(5) {width: 250px; min-width: 250px; max-width: 250px;}
+    .table td:nth-of-type(6) {width: 130px; min-width: 130px; max-width: 130px;}
+    .table td:nth-of-type(7) {width: 100px; min-width: 100px; max-width: 100px;}
+    .table td:nth-of-type(8) {width: 100px; min-width: 100px; max-width: 100px;}
+    .table td:nth-of-type(9) {width: 55px; min-width: 55px; max-width: 55px;}
+
+
+    .groupleadTable td:nth-of-type(1) {width: 80px; min-width: 80px; max-width: 80px;}
+    .groupleadTable td:nth-of-type(2) {width: 180px; min-width: 180px; max-width: 180px;}
+    .groupleadTable td:nth-of-type(3) {width: 80px; min-width: 80px; max-width: 80px;}
+    .groupleadTable td:nth-of-type(4) {width: 225px; min-width: 225px; max-width: 225px;}
+    .groupleadTable td:nth-of-type(5) {width: 100px; min-width: 100px; max-width: 100px;}
+    .groupleadTable td:nth-of-type(6) {width: 100px; min-width: 100px; max-width: 100px;}
+    .groupleadTable td:nth-of-type(7) {width: 100px; min-width: 100px; max-width: 100px;}
+    .groupleadTable td:nth-of-type(8) {width: 25px; min-width: 25px; max-width: 25px;}
+  }
+  .colorRed{
+    color:red;
+}
+  /* CSS ModalDelegate */
+  .modal-admin {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 580px;
+  }
+  .delegate-modal{
+    max-width: 580px!important;
+  }
+  .delegate-action-button{
+    text-align: right;
+    margin-right: 58px;
+  }

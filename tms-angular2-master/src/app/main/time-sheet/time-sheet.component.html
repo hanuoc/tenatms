@@ -1,0 +1,207 @@
+<div class="page-title">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <h3>Time Management
+                <small>Time Sheet List</small>
+              </h3>
+        </div>
+      </div>
+</div>
+<div class="clearfix"></div>
+
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div class="x_content">
+      <div class="row">
+        <div class="form-group">
+          <div *ngIf=" hasPermission('ABNORMALCASE_LIST','readAll') || hasPermission('ABNORMALCASE_LIST','readAllHR')" class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [settings]="dropdownSearchFilterSettings" [texts]="fullNameDropdowTexts"
+              [options]="FullNameOption" [(ngModel)]="FullNameFilter"></ss-multiselect-dropdown>
+          </div>
+
+            <div class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+                <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="textStatusRequest" [settings]="dropdownFilterSettings"
+                  [options]="statusRequestOption" [(ngModel)]="myFilterStatusRequests">Chọn trạng thái</ss-multiselect-dropdown>
+              </div>
+    
+          <div class="col-md-2 col-sm-6 col-xs-12 divfixinput">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="textAbnormalType" [settings]="dropdownFilterSettings"
+              [options]="AbnormalTypeOption" [(ngModel)]="myFilterAbnormalTypes"></ss-multiselect-dropdown>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12 divfixdatetimepicker">
+            <div class="input-group" daterangepicker [options]="daterangepickerOptions" (selected)="selectedDateRangePicker($event, chosenDate)">
+              <span class="form-control uneditable-input" name="daterange">
+                {{ chosenDate.start | date:'dd/MM/yy' }} - {{ chosenDate.end| date:'dd/MM/yy' }}
+              </span>
+              <span class="input-group-btn">
+                <a type="button" class="btn btn-default">
+                  <i class="glyphicon glyphicon-calendar"></i>
+                </a>
+              </span>
+            </div>
+          </div>
+          <div class="col-md-5 col-sm-6 col-xs-12 divfixbutton">
+            <button type="button" class="btn btn-info btn-circle" title="Filter" (click)="filterTimeSheet()">
+              <i class="fa fa-filter"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="reset()">
+              <i class="fa fa-undo"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-circle" title="Import time sheet" *ngIf="_authenService.hasPermission('TIMESHEET_LIST','readAll') && !isSA " title="Upload TimeSheet" (click)="showUploadModal()">
+              <i class="fa fa-upload"></i>
+            </button>
+            <button title="Export Excel" type="button" (click)="Export()" *ngIf="_authenService.hasPermission('TIMESHEET_LIST','readAll') && !isSA" class="btn btn-primary btn-success">
+              <i class="fa fa-download"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="x_title">
+        <div class="clearfix"></div>
+      </div>
+      <div>
+        <div style="overflow-x:auto;">
+          <table *ngIf="timeSheet && timeSheet.length > 0" class="table table-bordered">
+            <thead>
+              <tr>
+                <!-- <th class="colum-id">ID</th> -->
+                <th class="colum-hoten pointer" (click)="sort('UserName')">Full Name
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'UserName', 
+                      'fa-sort-asc': (column == 'UserName' && isAsc), 
+                      'fa-sort-desc': (column == 'UserName' && !isAsc) }" aria-hidden="true"> </i>
+                </th>
+                <th class="colum-hoten pointer" (click)="sort('DayofCheck')">Date
+                  <i class="fa" [ngClass]="{'fa-sort': column != 'DayofCheck', 
+                      'fa-sort-asc': (column == 'DayofCheck' && isAsc), 
+                      'fa-sort-desc': (column == 'DayofCheck' && !isAsc) }" aria-hidden="true"> </i>
+                </th>
+                <th class="colum-hours">Check In</th>
+                <th class="colum-hours">Check Out</th>
+                <th class="colum-hours">OT Check In</th>
+                <th class="colum-hours">OT Check Out</th>
+                <th class="colum-switch-button">Late Time</th>
+                <th class="colum-switch-button">Early Time</th>
+                <th>Absent Type</th>
+                <th class="colum-id">Working Day</th>
+                <th class="colum-tru-phu-cap">Allowance %</th>
+                <!-- <th class="colum-switch-button">Explanation</th>
+                <th class="colum-hoten">Approver</th>-->
+                <th>Status Type</th> 
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of timeSheet">
+                <!-- <td class="colum-id">{{item.ID}}</td> -->
+                <td class="colum-hoten">{{item.UserName}}</td>
+                <td>{{item.DayOfCheck|date: 'dd/MM/yyyy'}}</td>
+                <td class="colum-hours">{{item.CheckIn}}</td>
+                <td class="colum-hours">{{item.CheckOut}}</td>
+                <td class="colum-hours">{{item.OTCheckIn == 'null' ? '' : item.OTCheckIn}}</td>
+                <td class="colum-hours">{{item.OTCheckOut == 'null' ? '' : item.OTCheckOut}}</td>
+                <td class="colum-hours">{{item.Late}}</td>
+                <td class="colum-hours">{{item.LeaveEarly}}</td>
+                <td>{{item.Absent}}</td>
+                <td class="colum-id">{{item.NumOfWorkingDay}}</td>
+                <td class="colum-tru-phu-cap">{{item.MinusAllowance}}</td>
+                <!-- <td class="colum-switch-button">
+                  <span *ngIf="item.Explanation" class="glyphicon glyphicon-ok"></span>
+                </td>
+                <td class="colum-hoten">{{item.ApproverName}}</td>-->
+                <td>{{item.StatusExplanation}}</td> 
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div *ngIf="timeSheet && timeSheet.length == 0" class="col-md-12">
+        <div class="alert alert-info">
+          <strong>Notification!</strong> No data found in system
+        </div>
+      </div>
+      <div *ngIf="timeSheet && timeSheet.length > 0" class="col-md-6">
+          <div [ngClass]="!loadsuccess ? 'prevent-click': ''">
+        <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+          [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+          <img *ngIf="!loadsuccess" class="image-loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="            />
+          </div>
+      </div>
+      <div *ngIf="timeSheet && timeSheet.length > 0 && totalRow > 1" class="col-md-6 showPage" style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+      </div>
+      <div *ngIf="timeSheet && totalRow == 1" class="col-md-6 showPage" style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}}  to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<!-- Modal upload-->
+<div bsModal #modalImport="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Import Time Sheet</h4>
+        <button type="button" class="close pull-right" (click)="closeForm(modalImport,importForm)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #importForm="ngForm" (ngSubmit)="upload(importForm.valid)">
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Select File</label>
+            <div class="col-md-9 col-sm-6 col-xs-12">
+              <div class="btn btn-primary fileinput-button">
+                <span>Browse files</span>
+                <input id="fileupload" type="file" required #file name="file" accept=".txt" (click)="fileClicked($event)" >
+              </div>
+              <h3 *ngIf="checkName()" class="label labelFileName">{{fileName}}</h3>
+              <p class="help-block label label-danger" style="display: block!important; text-align:left!important; max-width:102px;"> support file *.txt</p>
+              <input type="hidden" [(ngModel)]="fileUpload" name="fileUrl" />
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table *ngIf="fingerTimeSheetError && fingerTimeSheetError.length > 0" class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>User No</th>
+                  <th>Date</th>
+                  <th>Machine</th>
+                  <th style="max-width: 10px;min-width:10px">User Name</th>
+                  <th>Error</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of fingerTimeSheetError">
+                  <td style="width: 5px !important">{{item.UserNo}}</td>
+                  <td>{{item.Date}}</td>
+                  <td>{{item.NumberFinger}}</td>
+                  <td>{{item.UserName}}</td>
+                  <td>{{item.Error}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div *ngIf="fingerTimeSheetError && fingerTimeSheetError.length > 0" class="col-md-5">
+              <pagination [boundaryLinks]="true" [maxSize]="5"  [itemsPerPage]="pageSizeError" (pageChanged)="pageChangedError($event)" [ngModelOptions]="{standalone: true}" [totalItems]="totalRowError"
+                [(ngModel)]="pageIndexError" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+            </div>
+            <div *ngIf="fingerTimeSheetError && fingerTimeSheetError.length > 0" class="col-md-4 col-md-offset-3 showPage" style="text-align: right">
+              <h5>Showing {{(pageIndexError - 1) * pageSizeError + 1}} to {{currentMaxEntriesError}} of {{totalRowError}} entries</h5>
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+              <button type="submit" class="btn btn-success" [disabled]="!importForm.form.valid || loadtimeSheet">Upload</button>
+              <img *ngIf="loadtimeSheet" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+              />
+              <button type="button" class="btn btn-circle" (click)="closeForm(modalImport,importForm)">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

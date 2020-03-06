@@ -1,0 +1,178 @@
+.text-right{
+  text-align: right;
+}
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 17px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Table*/
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td {
+  overflow-x: auto;
+  white-space: nowrap;
+  word-break: break-all;
+  text-overflow: ellipsis;
+  text-align: left;
+  padding: 8px;
+  overflow:hidden;
+}
+@media only screen and (max-width: 1370px) {
+  .table th:nth-of-type(1) {width:180px; min-width: 180px; max-width: 180px; padding-bottom: 25px;}
+  .table th:nth-of-type(2) {width: 40px; min-width: 40px; max-width: 40px; padding-bottom: 25px;}
+  .table td:nth-of-type(2) {width: 80px; min-width: 80px; max-width: 80px;}
+  .table th:nth-of-type(3) {width: 60px; min-width: 60px; max-width: 60px;}
+  .table th:nth-of-type(4) {width: 55px; min-width: 55px; max-width: 55px;}
+  .table th:nth-of-type(5) {width: 80px; min-width: 80px; max-width: 80px;}
+  .table th:nth-of-type(6) {width: 80px; min-width: 80px; max-width: 80px;}
+  .table th:nth-of-type(7) {width: 50px; min-width: 50px; max-width: 50px;}
+  .table th:nth-of-type(8) {width: 50px; min-width: 50px; max-width: 50px;}
+  .table th:nth-of-type(9) {width: 50px; min-width: 50px; max-width: 50px; padding-bottom: 25px;}
+  .table td:nth-of-type(9) {width: 90px; min-width: 90px; max-width: 90px;}
+  .table th:nth-of-type(10) {width: 67px; min-width: 67px; max-width: 67px;}
+  .table th:nth-of-type(11) {width: 80px; min-width: 80px; max-width: 80px;}
+  .table th:nth-of-type(12) {width: 50px; min-width: 50px; max-width: 50px; padding-bottom: 25px;}
+  }
+  @media only screen and (min-width: 1370px) {
+    .table th:nth-of-type(1) {width:180px; min-width: 180px; max-width: 180px;}
+    .table th:nth-of-type(2) {width: 160px; min-width: 160px; max-width: 160px;}
+    .table td:nth-of-type(2) {width: 100px; min-width: 100px; max-width: 100px;}
+    .table th:nth-of-type(3) {width: 100px; min-width: 100px; max-width: 100px;}
+    .table th:nth-of-type(4) {width: 100px; min-width: 100px; max-width: 100px;}
+    .table th:nth-of-type(5) {width: 100px; min-width: 100px; max-width: 100px;}
+    .table th:nth-of-type(6) {width: 120px; min-width: 120px; max-width: 120px;}
+    .table th:nth-of-type(7) {width: 100px; min-width: 100px; max-width: 100px;}
+    .table th:nth-of-type(8) {width: 100px; min-width: 100px; max-width: 100px;}
+    .table th:nth-of-type(9) {width: 140px; min-width: 140px; max-width: 140px;}
+    .table th:nth-of-type(10) {width: 100px; min-width: 100px; max-width: 100px;}
+    .table th:nth-of-type(11) {width: 110px; min-width: 110px; max-width: 110px;}
+    .table th:nth-of-type(12) {width: 100px; min-width: 100px; max-width: 100px;}
+    }
+
+
+tr:nth-child(even){background-color: #f9f9f9}
+
+.dateRangeLabel{
+  padding-top: 8px;
+  float: left;
+  padding-right: 20px;
+}
+.titleModal{
+ cursor: pointer;
+}
+.splitCol{
+  border-left: 1px solid #ccc;
+  float: left;
+  height: 20px;
+  margin-top: 5px;
+}
+.inputDate{
+  padding: 6px 10px!important;
+}
+.dropdown-inline[_ngcontent-c5]{
+  display: block!important;
+}
+.colum-id{
+ width: 5%;
+ text-align: center;
+}
+.colum-hoten{
+  width: 15%;
+ }
+ .colum-tru-phu-cap{
+  width: 5%;
+  text-align: center;
+ }
+ .colum-switch-button{
+   min-width: 100px;
+  width: 5%;
+  text-align: center;
+ }
+ .colum-hours{
+  width: 5%;
+  text-align: left!important;
+ }
+ .control-label{
+   text-align: center;
+ }
+.labelError{
+  background-color: red;
+  font-weight:bold;
+}
+.labelFileName{
+  color: black;
+  font-size: 100%!important;
+  font-weight: 100!important;
+}
+ .fileinput-button input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    opacity: 0;
+    -ms-filter: 'alpha(opacity=0)';
+    /* font-size: 200px !important; */
+    direction: ltr;
+    cursor: pointer;
+    height: 34px;
+    width: 111px;
+    padding-left: 9px;
+}

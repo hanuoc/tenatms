@@ -1,0 +1,745 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <h3>System Management
+        <small>User List</small>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="row">
+        <div class="form-group">
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+            <ss-multiselect-dropdown [texts]="FullNameDropdownTexts" [settings]="dropdownSearchFilterSettings"
+              [options]="FullNameOption" [(ngModel)]="FullNameFilter"></ss-multiselect-dropdown>
+          </div>
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="GroupDropDownTexts"
+              [settings]="dropdownSearchFilterSettings" [options]="GroupOption" [(ngModel)]="GroupFilter">
+            </ss-multiselect-dropdown>
+          </div>
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="ActiveDropDownTexts"
+              [settings]="dropdownSearchFilterSettings" [options]="StatusOption" [(ngModel)]="ActiveFilter">
+            </ss-multiselect-dropdown>
+          </div>
+          <div class="col-md-3 col-sm-12 col-xs-12 divfixbutton">
+            <button type="button" class="btn btn-info btn-circle" title="Filter" (click)="filterUser()">
+              <i class="fa fa-filter"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="resetFilter()">
+              <i class="fa fa-undo"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-circle" title="Active/InActive Selected"
+              [disabled]="!checkButton" (click)="changeStatusMulti()" *ngIf="!isSA">
+              <i class="fa fa-exchange"></i>
+            </button>
+            <button type="button" class="btn btn-success btn-circle" title="Create" (click)="showAddModal()"
+              *ngIf="!isSA">
+              <i class="fa fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="x_title">
+      </div>
+      <div style="overflow-x:auto;">
+        <table *ngIf="users && users.length > 0" class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="checkboxfield" style="width: 10px;" *ngIf="!isSA">
+                <input type="checkbox" name="all" [checked]="isAllChecked()" (change)="checkAll($event,isAllChecked())">
+              </th>
+              <th class="pointer" (click)="sort('FullName')" style="width: 350px;">
+                Full Name
+                <i class="fa" [ngClass]="{'fa-sort': column != 'FullName',
+                'fa-sort-asc': (column == 'FullName' && isDesc),
+                'fa-sort-desc': (column == 'FullName' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th class="pointer" (click)="sort('Email')" style="width: 350px;">
+                Email
+                <i class="fa" [ngClass]="{'fa-sort': column != 'Email',
+                'fa-sort-asc': (column == 'Email' && isDesc),
+                'fa-sort-desc': (column == 'Email' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th class="pointer" (click)="sort('Group.Name')">
+                Group
+                <i class="fa" [ngClass]="{'fa-sort': column != 'Group.Name',
+                  'fa-sort-asc': (column == 'Group.Name' && isDesc),
+                  'fa-sort-desc': (column == 'Group.Name' && !isDesc) }" aria-hidden="true"> </i>
+              </th>
+              <th style="width: 100px;">Status</th>
+              <th *ngIf="!isSA">Action</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td class="checkboxfield" *ngIf="!isSA">
+                <input type="checkbox" [(ngModel)]="user.Checked" [disabled]="checkChangeStatus(user.Id)"
+                  [name]="user.ID" (change)="checkOnChange(user,user.Checked)" [ngModelOptions]="{standalone: true}">
+              </td>
+              <td class="titleModal" (click)="showEditModal(user.Id,user,true)">
+                <a>{{user.FullName}}</a>
+              </td>
+              <td>{{user.Email}}</td>
+              <td>{{user.Group?.Name}}</td>
+              <td>
+                {{user.Status == true ? 'Active' : 'Inactive'}}
+              </td>
+              <td *ngIf="!isSA">
+                <button class="btn btn-xs btn-primary" title="Edit"
+                  *ngIf="_authenService.hasPermission('USER','update')" (click)="showEditModal(user.Id,user)">
+                  <i class="fa fa-pencil-square-o"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-xs" title="Active/InActive"
+                  [disabled]="checkChangeStatus(user.Id)" (click)="changeStatus(user.Id)">
+                  <i class="fa fa-exchange"></i>
+                </button>
+                <button class="btn btn-xs btn-success" title="Manage Onsite"
+                  *ngIf="_authenService.hasPermission('USER','update')" (click)="showManageOnsiteModal(user.Id)">
+                  <i class="fa fa-fighter-jet"></i>
+                </button>
+                <button class="btn btn-xs btn-danger" title="Resign"
+                  *ngIf="_authenService.hasPermission('USER','update') && !user.ResignationDate"
+                  (click)=" showResignModal(user.Id)">
+                  <i class="fa fa-external-link"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="users && users.length == 0" class="col-md-12">
+        <div class="alert alert-info">
+          <strong>Notification!</strong> No data found in system
+        </div>
+      </div>
+      <div *ngIf="users && users.length > 0" class="col-md-6">
+        <div [ngClass]="!loadsuccess ? 'prevent-click': ''">
+          <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize"
+            (pageChanged)="pageChanged($event)" [totalItems]="totalRow" [(ngModel)]="pageIndex" class="pagination-sm"
+            previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+          <img *ngIf="!loadsuccess" class="image-loading"
+            src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+        </div>
+      </div>
+      <div *ngIf="users && users.length > 0 && totalRow > 1" class="col-md-6 showPage" style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+      </div>
+      <div *ngIf="users && totalRow == 1" class="col-md-6 showPage" style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal add and edit user-->
+<div bsModal #modalAddEdit="bs-modal" [config]="{'backdrop':'static', 'keyboard': false}" class="modal fade"
+  tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left" *ngIf="isCreate">Create User</h4>
+        <h4 class="modal-title pull-left" *ngIf="!isDetail && !isCreate">Update User</h4>
+        <h4 class="modal-title pull-left" *ngIf="isDetail && !isCreate">User Detail</h4>
+        <button type="button" class="close pull-right" (click)="hideModalCreate(addEditForm)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #addEditForm="ngForm"
+          (ngSubmit)="saveChange(addEditForm)" *ngIf="entity" autocomplete="on">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Full Name
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" #name="ngModel" [disabled]="isDetail" [(ngModel)]="entity.FullName" required
+                minlength="3" maxlength="50" name="name" class="form-control">
+              <small *ngIf="addEditForm.controls['name']?.hasError('minlength')||entity.FullName?.length>50"
+                class="text-danger">
+                Full Name length must be between 3 to 50 characters!
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Account
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="text" #usernameUser="ngModel" [disabled]="!isCreate" [(ngModel)]="entity.UserName"
+                name="usernameUser" class="form-control" minlength="3" maxlength="16" required autocomplete="off">
+              <small *ngIf="addEditForm.controls['usernameUser']?.hasError('minlength')||entity.UserName?.length>50"
+                class="text-danger">
+                Account length must be between 3 to 16 characters!
+              </small>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="isCreate">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Password
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="password" id="password-field" #passwordUser="ngModel" [(ngModel)]="entity.Password"
+                name="passwordUser" class="form-control" minlength="6" maxlength="16" required
+                pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,16}$"
+                autocomplete="new-password">
+              <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+              <small *ngIf="addEditForm.controls['passwordUser']?.hasError('pattern')" class="text-danger">
+                Password should be 8 - 16 in length, contain at least one lower case, one numberic character, one
+                special character!
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-3">Email
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input type="text" #emailUser="ngModel" [disabled]="isDetail"
+                pattern="^(?!.*(?:''|\.\.))[a-z][a-z0-9_\.]{1,29}[^\.]@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,2}$"
+                [(ngModel)]="entity.Email" required name="emailUser" class="form-control" autocomplete="nope"
+                minlength="3" maxlength="50">
+              <small *ngIf="addEditForm.controls['emailUser']?.hasError('minlength')" class="text-danger">
+                Email length from 3 to 50 character!
+                <br>
+              </small>
+              <small *ngIf="addEditForm.controls['emailUser']?.hasError('pattern')" class="text-danger">
+                Invalid email address. Email ID should be between 3 to 30 characters and followed by example@cmc.com.vn!
+              </small>
+            </div>
+
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Phone Number:</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="text" #phonenumber="ngModel" [disabled]="isDetail" maxlength="20"
+                [(ngModel)]="entity.PhoneNumber" name="phonenumber" class="form-control"
+                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
+              <!-- <input type="text" #phonenumber="ngModel" [disabled]="isDetail" pattern="^\+?[0-9]{3}-?[0-9]{6,12}$" [(ngModel)]="entity.PhoneNumber" name="phonenumber" class="form-control" maxlength="20"> -->
+            </div>
+          </div>
+          <!-- <div class="form-group" *ngIf="isCreate">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Password<span style="color:red">*</span>:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input type="password" id="password-field" #passwordUser="ngModel" [(ngModel)]="entity.Password" name="passwordUser" class="form-control" minlength="6" maxlength="16"
+              required pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,16}$" autocomplete="new-password">
+              <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>          
+                <small *ngIf="addEditForm.controls['passwordUser']?.hasError('pattern')" class="text-danger">
+                Password should be 8 - 16 in length, contain at least one lower case, one numberic character, one special character!
+            </small>
+            </div>
+          </div> -->
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-3">Role
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <ss-multiselect-dropdown name="RoleDropDown" [disabled]="isDetail" [texts]="RoleDropDownTexts"
+                [settings]="RoleDropDownSettings" [options]="allRoles" #RoleDropDown="ngModel" [(ngModel)]="myRoles">
+              </ss-multiselect-dropdown>
+            </div>
+
+            <label class="control-label col-md-2 col-sm-2 col-xs-3">Birthday
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <div class="input-group" *ngIf="isDetail">
+                <span class="form-control uneditable-input" name="datepicker" disabled>
+                  {{ chosenbirthday.start | date:'dd/MM/y' }}
+                </span>
+                <span class="input-group-btn" disabled>
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+              <div class="input-group" *ngIf="!isDetail" daterangepicker [options]="daterangeOptionsBirthday"
+                (selected)="selectedDatePicker($event)">
+                <span class="form-control uneditable-input" name="datepicker">
+                  {{ chosenbirthday.start | date:'dd/MM/y' }}
+                </span>
+                <span class="input-group-btn" disabled>
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Group:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <ss-multiselect-dropdown name="GroupDropDown" [disabled]="isDetail" [texts]="GroupDropDownTexts"
+                [settings]="GroupDropDownSettings" [options]="groupOption" #GroupDropDown="ngModel"
+                [(ngModel)]="GroupModel"></ss-multiselect-dropdown>
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Starting Date
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <div class="input-group" *ngIf="isDetail">
+                <span class="form-control uneditable-input" name="datepicker" disabled>
+                  {{ chosenDate.start | date:'dd/MM/y' }}
+                </span>
+                <span class="input-group-btn" disabled>
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+
+              <div class="input-group" *ngIf="!isDetail" daterangepicker [options]="daterangeOptions"
+                (selected)="selectedDatePickerStartdate($event, chosenDate)">
+                <span class="form-control uneditable-input" name="datepicker">
+                  {{ chosenDate.start | date:'dd/MM/y' }}
+                </span>
+                <span class="input-group-btn" disabled>
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">List User No:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input type="text" #employeeNo="ngModel" [disabled]="isDetail" [(ngModel)]="entity.ListUserNo"
+                name="employeeNo" class="form-control" maxlength="40" pattern="^[0-9]*(-[0-9]+)*$" />
+              <small *ngIf="addEditForm.controls['employeeNo']?.hasError('pattern')" class="text-danger">
+                List User No invalid !
+              </small>
+            </div>
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">EmployeeID
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input type="text" #employeeID="ngModel" [disabled]="isDetail" [(ngModel)]="entity.EmployeeID"
+                name="employeeID" class="form-control" maxlength="20" pattern="^[0-9a-zA-Z]*$"  />
+              <small
+                *ngIf="addEditForm.controls['employeeID']?.hasError('maxlength')||addEditForm.controls['employeeID']?.hasError('pattern')"
+                class="text-danger">
+                Email length from 1 to 20 character and not contain special characters!
+                <br>
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Gender
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <ss-multiselect-dropdown name="GenderDropDown" [disabled]="isDetail" [texts]="GenderDropDownTexts"
+                [settings]="GenderDropDownSettings" [options]="genderOption" #GenderDropDown="ngModel"
+                [(ngModel)]="GenderModel"></ss-multiselect-dropdown>
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12" *ngIf="isDetail && !isCreate">Childcare
+              Leave:</label>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12" *ngIf="!isDetail && !isCreate">Childcare
+              Leave:</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <div class="input-group">
+                <input type="text" #ChildcareLeave="ngModel" [disabled]="true" *ngIf="isDetail && !isCreate"
+                  [(ngModel)]="IsChildcareLeave" name="ChildcareLeave" class="form-control  uneditable-input" />
+                <input type="text" #ChildcareLeave="ngModel" *ngIf="!isDetail && !isCreate"
+                  [(ngModel)]="IsChildcareLeave" name="ChildcareLeave" class="form-control  uneditable-input"
+                  style="pointer-events: none;" />
+                <span class="input-group-btn" (click)="ShowPopupChildcareLeave(entity)" *ngIf="!isDetail && !isCreate">
+                  <a type="button" class="btn btn-default">
+                    <i class="fa fa-child"></i>
+                  </a>
+                </span>
+                <span class="input-group-btn" *ngIf="isDetail && !isCreate">
+                  <a type="button" class="btn btn-default">
+                    <i class="fa fa-child"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+
+
+
+          <div class="form-group" *ngIf="isDetail">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Resignation Date:</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <div class="input-group">
+                <span class="form-control uneditable-input" name="rangepickerResign" disabled>
+                  {{ this.entity.ResignationDate!=null?(this.entity.ResignationDate| date:'dd/MM/yyyy'): '-' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+
+
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Status:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input type="text" [disabled]="true" value="{{entity.Status == true ? 'Active' : 'Inactive'}}"
+                class="form-control">
+            </div>
+
+          </div>
+          <div class="form-group" *ngIf="!isEdit && !isCreate && UserOnsiteInfoInTime?.length > 0 ">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Onsite:</label>
+            <div class="col-md-4 col-sm-1 col-xs-12">
+              <input type="text" #onsitePlace="ngModel" [disabled]="isDetail"
+                [(ngModel)]="UserOnsiteInfoInTime[0].OnsitePlace" name="onsitePlace" class="form-control" />
+            </div>
+
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Onsite Duration:</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <div class="input-group">
+                <span class="form-control uneditable-input" name="rangepickerResign" disabled>
+                  {{ UserOnsiteInfoInTime[0].StartDate | date:'dd/MM/yy' }} -
+                  {{ UserOnsiteInfoInTime[0].EndDate| date:'dd/MM/yy' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2">
+              <button type="submit" class="btn btn-success" *ngIf="!isDetail && isCreate"
+                [disabled]="!addEditForm.form.valid || myRoles[0]==null||GenderModel[0]==null || chosenDate.start=='' || chosenbirthday.start=='' || isDisable">Add</button>
+              <button type="button" class="btn btn-success" (click)="editForm()"
+                *ngIf="isDetail && !isCreate &&!isSA">Edit</button>
+              <button type="button" class="btn btn-primary"
+                *ngIf="isDetail && !entity.Status && !checkChangeStatus(entity.Id) && !isCreate &&!isSA"
+                (click)="changeStatus(entity.Id)">Active</button>
+              <button type="button" class="btn btn-danger"
+                *ngIf="isDetail && entity.Status && !checkChangeStatus(entity.Id) && !isCreate &&!isSA"
+                (click)="changeStatus(entity.Id)">Inactive</button>
+              <button type="submit" class="btn btn-success" *ngIf="!isDetail && !isCreate &&!isSA"
+                [disabled]="!addEditForm.form.valid || myRoles[0]==null||GenderModel[0]==null">Update</button>
+              <button type="button" (click)="reset(entity.Id)" *ngIf="!isDetail && !isCreate"
+                class="btn btn-primary">Reset</button>
+              <button type="button" (click)="resetAdd()" *ngIf="!isDetail && isCreate"
+                class="btn btn-primary">Reset</button>
+              <button type="button" (click)="hideModalCreate(addEditForm)" class="btn">Close</button>
+
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal manage onsite -->
+<div bsModal #modalManageOnsite="bs-modal" [config]="{'backdrop':'static', 'keyboard': false}" class="modal fade"
+  tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Manage Onsite</h4>
+        <button type="button" class="close pull-right" (click)="hideModalManageOnsite(ManageOnsiteForm)"
+          aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" autocomplete="off" novalidate #ManageOnsiteForm="ngForm"
+          (ngSubmit)="saveChangeOnsite(ManageOnsiteForm)" *ngIf="entity" autocomplete="off">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Full Name:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input type="text" #name="ngModel" disabled="disabled" [(ngModel)]="entity.FullName" name="name"
+                class="form-control">
+            </div>
+
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Account:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input type="text" #username="ngModel" disabled="disabled" [(ngModel)]="entity.UserName" name="username"
+                class="form-control" required autocomplete="off">
+            </div>
+          </div>
+          <div class="form-group">
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Onsite Place
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <input type="text" #OnsitePlace="ngModel" [(ngModel)]="UserOnsiteInfo.OnsitePlace" name="OnsitePlace"
+                class="form-control" minlength="3" maxlength="50" required autocomplete="off">
+              <small
+                *ngIf="ManageOnsiteForm.controls['OnsitePlace']?.hasError('minlength')||UserOnsiteInfo?.OnsitePlace?.length>50"
+                class="text-danger">
+                Onsite Place length must be between 3 to 50 characters!
+              </small>
+            </div>
+
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Duration
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-4 col-sm-3 col-xs-12">
+              <div class="input-group" daterangepicker [options]="daterangepickerOption"
+                (selected)="selectedOnsiteDatePicker($event, chosenOnsiteDate)">
+                <span class="form-control uneditable-input" name="rangepickerOnsite">
+                  {{ chosenOnsiteDate.start | date:'dd/MM/yyyy' }} - {{ chosenOnsiteDate.end| date:'dd/MM/yyyy' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+          </div>
+          <div class="form-group">
+            <div class="col-md-12 col-sm-9 col-xs-12 ">
+              <div style="overflow-x:auto;">
+                <table *ngIf="listUserOnsiteInfo && listUserOnsiteInfo.length > 0 && isAddOnsite"
+                  class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th class="pointer" style="width: 150px;">
+                        Onsite Place
+                        <i class="fa" aria-hidden="true"> </i>
+                      </th>
+                      <th class="pointer" style="width: 150px;">
+                        Start Date
+                        <i class="fa" aria-hidden="true"> </i>
+                      </th>
+                      <th class="pointer" style="width: 150px;">
+                        End Date
+                        <i class="fa" aria-hidden="true"> </i>
+                      </th>
+                      <th *ngIf="!isSA">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let UserOnsiteInfo of listUserOnsiteInfo">
+                      <td class="titleModal">{{UserOnsiteInfo.OnsitePlace}}</td>
+                      <td>{{UserOnsiteInfo.StartDate| date:'dd/MM/yyyy'}}</td>
+                      <td>{{UserOnsiteInfo.EndDate| date:'dd/MM/yyyy'}}</td>
+                      <td *ngIf="!isSA">
+                        <button class="btn btn-xs btn-primary" title="Edit"
+                          *ngIf="_authenService.hasPermission('USER','update')"
+                          (click)="EditOnsiteInfo(UserOnsiteInfo,ManageOnsiteForm)">
+                          <i class="fa fa-pencil-square-o"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-xs" title="Delete"
+                          *ngIf="_authenService.hasPermission('USER','update')"
+                          (click)="DeleteOnsiteInfo(UserOnsiteInfo.ID,UserOnsiteInfo.UserID)">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div *ngIf="listUserOnsiteInfo && listUserOnsiteInfo.length > 0 && isAddOnsite" class="col-md-6">
+                <div>
+                  <pagination [boundaryLinks]="true" [maxSize]="pagingSizeOnsite" [itemsPerPage]="pageSizeOnsite"
+                    (pageChanged)="pageChangedOnsite($event)" [totalItems]="totalRowOnsite"
+                    [(ngModel)]="pageIndexOnsite" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;"
+                    firstText="&laquo;" lastText="&raquo;" name="pagingOnsite"></pagination>
+                  <img *ngIf="!loadsuccess" class="image-loading"
+                    src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                </div>
+              </div>
+              <div *ngIf="listUserOnsiteInfo && listUserOnsiteInfo.length > 0 && totalRowOnsite > 1  && isAddOnsite"
+                class="col-md-6 showPage" style="text-align: right">
+                <h5>Showing {{(pageIndexOnsite - 1) * pageSizeOnsite + 1}} to {{currentMaxEntriesOnsite}} of
+                  {{totalRowOnsite}}
+                  entries</h5>
+              </div>
+              <div *ngIf="listUserOnsiteInfo && totalRowOnsite == 1 && isAddOnsite" class="col-md-6 showPage"
+                style="text-align: right">
+                <h5>Showing {{(pageIndexOnsite - 1) * pageSizeOnsite + 1}} to {{currentMaxEntriesOnsite}} of
+                  {{totalRowOnsite}}
+                  entry</h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-2">
+              <button type="submit" *ngIf="isAddOnsite" class="btn btn-success"
+                [disabled]="!ManageOnsiteForm.form.valid">Add</button>
+              <button type="submit" *ngIf="!isAddOnsite" class="btn btn-success"
+                [disabled]="!ManageOnsiteForm.form.valid">Update</button>
+              <button type="button" *ngIf="!isAddOnsite" class="btn btn-primary" (click)="BackToAdd()">Back</button>
+              <button type="button" (click)="hideModalManageOnsite(ManageOnsiteForm)" class="btn">Close</button>
+
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal Childcare Leave-->
+<div bsModal #modalChildcareLeave="bs-modal" [config]="{'backdrop':'static', 'keyboard': false}" class="modal fade"
+  tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left" *ngIf="entity?.ChildcareLeaveID==null">Create Childcare Leave</h4>
+        <h4 class="modal-title pull-left" *ngIf="entity?.ChildcareLeaveID!=null">Update Childcare Leave</h4>
+        <!-- <h4 class="modal-title pull-left" >Update Childcare Leave</h4> -->
+        <button type="button" class="close pull-right" (click)="hiddenModalChild()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" autocomplete="off" novalidate #childCareForm="ngForm"
+          (ngSubmit)="saveChangeChildcareLeave(childCareForm)" *ngIf="entity" autocomplete="off">
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Full Name
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="text" #name="ngModel" [disabled]="true" [(ngModel)]="entity.FullName" required minlength="3"
+                maxlength="50" name="name" class="form-control">
+              <small *ngIf="childCareForm.controls['name']?.hasError('minlength')||entity.FullName?.length>50"
+                class="text-danger">
+                Full Name length must be between 3 to 50 characters!
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Account
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="text" #usernameUser="ngModel" [disabled]="!isCreate" [(ngModel)]="entity.UserName"
+                name="usernameUser" class="form-control" minlength="3" maxlength="16" required autocomplete="off">
+              <small *ngIf="childCareForm.controls['usernameUser']?.hasError('minlength')||entity.UserName?.length>50"
+                class="text-danger">
+                Account length must be between 3 to 16 characters!
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <!-- <label class="control-label col-md-3 col-sm-3 col-xs-12">Group:</label> -->
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Validity Period
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <div class="input-group" daterangepicker [options]="daterangepickerOptionsChildcareLeave"
+                (selected)="selectedDateChildcareLeave($event)">
+                <span class="form-control uneditable-input" name="daterangeChildcareLeave">
+                  {{ chosenDateChildcareLeave.start | date:'dd/MM/y' }} -
+                  {{ chosenDateChildcareLeave.end| date:'dd/MM/y' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label label-radio col-md-3 col-sm-3 col-xs-12">Childcare Leave Type
+              <span style="color:red">*</span>:</label>
+            <div class="control-radio col-md-5 col-sm-4 col-xs-12">
+              <input type="radio" name="radio" value="LateComing" [(ngModel)]="radioValue" required> Late Coming
+            </div>
+            <div class="control-radio col-md-4 col-sm-4 col-xs-12">
+              <input type="radio" name="radio" value="EarlyLeaving" [(ngModel)]="radioValue"> Early Leaving
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+              <button type="submit" class="btn btn-success" *ngIf="entity?.ChildcareLeaveID==null"
+                [disabled]="!childCareForm.form.valid">Add</button>
+              <button type="submit" class="btn btn-success" *ngIf="entity?.ChildcareLeaveID!=null"
+                [disabled]="!childCareForm.form.valid">Update</button>
+              <button type="button" (click)="resetChildCare(entity)" class="btn btn-primary">Reset</button>
+              <button type="button" (click)="deleteChildcareLeave(entity)" *ngIf="entity?.ChildcareLeaveID!=null"
+                class="btn btn-danger">Remove</button>
+              <button type="button" (click)="hiddenModalChild()" class="btn">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal resign-->
+<div bsModal #modalResign="bs-modal" [config]="{'backdrop':'static', 'keyboard': false}" class="modal fade"
+  tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">User Resign</h4>
+        <button type="button" class="close pull-right" (click)="hideModalResign(ResignForm)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" autocomplete="off" novalidate #ResignForm="ngForm"
+          (ngSubmit)="SaveResign(ResignForm)" autocomplete="off">
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Resignation Date
+              <span style="color:red">*</span>:</label>
+            <div class="col-md-6 col-sm-9 col-xs-12">
+              <div class="input-group" daterangepicker [options]="daterangepickerOptionResign"
+                (selected)="selectedDatePickerResign($event, chosenResign)">
+                <span class="form-control uneditable-input" name="rangepickerResign">
+                  {{ chosenResign.start | date:'dd/MM/yyyy' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+              <button type="submit" class="btn btn-success">Resign</button>
+              <button type="button" (click)="hideModalResign(ResignForm)" class="btn">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #modalAddConfirm="bs-modal" [config]="{'backdrop':'static', 'keyboard': false}" class="modal fade"
+  tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Confirm</h4>
+        <button type="button" class="close pull-right" (click)="hideModalAddConfirm(ResignForm)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" autocomplete="off" #addEditForm="ngForm"
+          (ngSubmit)="SaveAddConfirm(addEditForm)" autocomplete="off">
+          <div class="form-group">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <span *ngIf='dataOld != undefined'>User with email {{ dataOld.Email }} existed. All related information
+                for the old account with that email would be removed if you create new account with the same
+                email.<br />Are you sure to do that?</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-md-8 col-sm-8 col-xs-12 col-md-offset-4">
+              <button type="submit" class="btn btn-success">OK</button>
+              <button type="button" (click)="hideModalAddConfirm(ResignForm)" class="btn">Cancel</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

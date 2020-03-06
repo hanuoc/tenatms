@@ -1,0 +1,772 @@
+<div *ngIf="isGroup && (role=='Admin' || role == 'HR' || role == 'SuperAdmin')">
+  <div class="row top_tiles" *ngIf="totalUser">
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <a (click)="ClickUserFromDashBoard($event)">
+            <i class="fa fa-user"></i>
+          </a>
+        </div>
+        <div class="count">{{totalUser.TotalUsers}}</div>
+        <h3>Total Users</h3>
+      </div>
+    </div>
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+
+      <div class="tile-stats">
+        <div class="icon">
+          <a (click)="ClickActiveUserFromDashBoard($event)">
+            <i class="fa fa-check-circle"></i>
+          </a>
+        </div>
+        <div class="count">{{totalUser.TotalActive}}</div>
+        <h3>Active User</h3>
+      </div>
+    </div>
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <a (click)="ClickInActiveUserFromDashBoard($event)">
+            <i class="fa fa-ban"></i>
+          </a>
+        </div>
+        <div class="count">{{totalUser.TotalInactive}}</div>
+        <h3>Inactive User</h3>
+      </div>
+    </div>
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <a (click)="ClickOnsiteUserFromDashBoard($event)">
+            <i class="fa fa-arrow-circle-right"></i>
+          </a>
+        </div>
+        <div class="count">{{totalUser.TotalOnsite}}</div>
+        <h3>Onsite User</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="dashboard_graph">
+        <div class="row x_title">
+          <div class="col-md-2">
+            <a routerLink="/main/abnormalcase">
+              <h3 class="hover">Abnormal Summary
+              </h3>
+            </a>
+          </div>
+          <div class="col-md-offset-2 col-md-2 col-sm-12 col-xs-12 divfixinput" style="margin-right:5px;">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="GroupDropDownTexts" [settings]="dropdownSearchFilterSettings"
+              [options]="groupOption" [(ngModel)]="GroupFilter"></ss-multiselect-dropdown>
+          </div>
+          <div class="col-md-3 col-sm-4 col-xs-4 form-group divfixdatetimepicker">
+
+            <div class="input-group" daterangepicker [options]="daterangepickerOptions" (selected)="selectedDateRangePicker($event, chosenDate)"
+              (applyDaterangepicker)="applyDatepicker($event,chosenDate)">
+              <span class="form-control uneditable-input" name="daterange">
+                {{ chosenDate.start | date:'dd/MM/y' }} - {{ chosenDate.end| date:'dd/MM/y' }}
+              </span>
+              <span class="input-group-btn">
+                <a type="button" class="btn btn-default">
+                  <i class="glyphicon glyphicon-calendar"></i>
+                </a>
+              </span>
+            </div>
+          </div>
+          <div>
+            <button type="button" style="float: left;margin-left: 10px" class="btn btn-info btn-circle" title="Filter" (click)="filterRequestIsAssign()">
+              <i class="fa fa-filter"></i>
+            </button>
+            <button style="float: left;margin-left: 4px" title="Reset" type="button" class="btn btn-primary btn-circle" (click)="reset()">
+              <i class="fa fa-undo"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-md-9 col-sm-9 col-xs-12 " *ngIf="abnormalChart">
+          <div class="demo-container" style="height:320px; border-bottom:1px solid #E6E9ED">
+            <network-activities [dataset]="abnormalChart" [showdataLateComing]="lateComing" [showdataEarlyLeaving]="earlyLeaving" [showdataLeave]="leave"
+              [showdataUnusedEarlyLeaving]="unusedEarlyLeaving" [showdataUnusedLateComing]="unusedLateComing" [showdataUnusedLeave]="unusedLeave"
+              [showdataWithoutCheckIn]="withoutCheckIn" [showdataWithoutCheckOut]="withoutCheckOut" [showdataWithoutCheckInOut]="withoutCheckInOut"></network-activities>
+          </div>
+          <table style="color:#3f3f3f; background: white;width: 100%; margin-top: 8px;">
+            <tbody>
+              <tr>
+                <div class="col-md-12">
+                  <div class="col-md-4"> <span>
+                      <td><input [(ngModel)]="leave" type="checkbox" /></td>
+                      <td class="legendColorBox">
+                        <div style="border:1px solid null;padding:1px">
+                          <div style="width:4px;height:0;border:5px solid rgb(150,202,89);overflow:hidden">
+                          </div>
+                        </div>
+                      </td>
+                      <td class="legendLabel">Unauthorized Leave&nbsp;&nbsp;</td>
+                    </span></div>
+                  <div class="col-md-4"> <span>
+                      <td><input [(ngModel)]="unusedLeave" type="checkbox" /></td>
+                      <td class="legendColorBox">
+                        <div style="border:1px solid null;padding:1px">
+                          <div style="width:4px;height:0;border:5px solid rgb(90,128,34);overflow:hidden"></div>
+                        </div>
+                      </td>
+                      <td class="legendLabel">Unused Authorized Leave&nbsp;&nbsp;</td>
+                    </span>
+                  </div>
+                  <div class="col-md-4"><span>
+                      <td><input [(ngModel)]="withoutCheckIn" type="checkbox" /></td>
+                      <td class="legendColorBox">
+                        <div style="border:1px solid null;padding:1px">
+                          <div style="width:4px;height:0;border:5px solid rgb(44,114,130);overflow:hidden"></div>
+                        </div>
+                      </td>
+                      <td class="legendLabel">OT Without Check In&nbsp;&nbsp;</td>
+                    </span></div>
+                </div>
+                <div class="col-md-12">
+                  <div class="col-md-4"> <span>
+                      <td><input [(ngModel)]="lateComing" type="checkbox" /></td>
+                      <td class="legendColorBox">
+                        <div style="border:1px solid null;padding:1px">
+                          <div style="width:4px;height:0;border:5px solid rgb(63,151,235);overflow:hidden">
+                          </div>
+                        </div>
+                      </td>
+                      <td class="legendLabel">Unauthorized Late-Coming&nbsp;&nbsp;</td>
+                    </span></div>
+                  <div class="col-md-4"><span>
+                      <td><input [(ngModel)]="unusedLateComing" type="checkbox" /></td>
+                      <td class="legendColorBox">
+                        <div style="border:1px solid null;padding:1px">
+                          <div style="width:4px;height:0;border:5px solid rgb(247,203,56);overflow:hidden"></div>
+                        </div>
+                      </td>
+                      <td class="legendLabel">Unused Authorized Late Coming&nbsp;&nbsp;</td>
+                    </span>
+                  </div>
+
+                  <div class="col-md-4">
+                    <span>
+                      <td><input [(ngModel)]="withoutCheckOut" type="checkbox" /></td>
+                      <td class="legendColorBox">
+                        <div style="border:1px solid null;padding:1px">
+                          <div style="width:4px;height:0;border:5px solid rgb(120,161,71);overflow:hidden"></div>
+                        </div>
+                      </td>
+                      <td class="legendLabel">OT Without Check Out&nbsp;&nbsp;</td>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-md-12">
+                  <div class="col-md-4"> <span>
+                      <td><input [(ngModel)]="earlyLeaving" type="checkbox" /></td>
+                      <td class="legendColorBox">
+                        <div style="border:1px solid null;padding:1px">
+                          <div style="width:4px;height:0;border:5px solid rgb(255,0,0);overflow:hidden"></div>
+                        </div>
+                      </td>
+                      <td class="legendLabel">Unauthorized Early-Leaving&nbsp;&nbsp;</td>
+                    </span>
+                  </div>
+                  <div class="col-md-4">
+                    <span>
+                      <td><input [(ngModel)]="unusedEarlyLeaving" type="checkbox" /></td>
+                      <td class="legendColorBox">
+                        <div style="border:1px solid null;padding:1px">
+                          <div style="width:4px;height:0;border:5px solid rgb(111,122,138);overflow:hidden"></div>
+                        </div>
+                      </td>
+                      <td class="legendLabel">Unused Authorized Early Leaving&nbsp;&nbsp;</td>
+                    </span></div>
+                  <div class="col-md-4">
+                    <span>
+                      <td><input [(ngModel)]="withoutCheckInOut" type="checkbox" /></td>
+                      <td class="legendColorBox">
+                        <div style="border:1px solid null;padding:1px">
+                          <div style="width:4px;height:0;border:5px solid rgb(50,120,188);overflow:hidden"></div>
+                        </div>
+                      </td>
+                      <td class="legendLabel">OT Without Check In Out&nbsp;&nbsp;</td>
+                    </span>
+                  </div>
+                </div>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="x_panel tile fixed_height_320 overflow_hidden scroll_y fixed_height_312">
+            <a routerLink="/main/abnormalcase">
+              <div class="x_title">
+                <h2 class="hover">Abnormal Table
+                  <small>This month</small>
+                </h2>
+                <div class="clearfix"></div>
+              </div>
+            </a>
+            <div class="x_content">
+              <table class="" style="width:100%" *ngIf="abnormalChartPercent">
+                <tr>
+                  <th>
+                    <p class="thead-table">Reason Type</p>
+                  </th>
+                  <th class="text-right">
+                    <p class="thead-table">Amount</p>
+                  </th>
+                </tr>
+
+                <tr *ngFor="let items of abnormalChartPercent">
+                  <td>
+                    <p (click)="ClickAbnormalChart(items.ReasonTypeID)" class="parent"> <span class="pull-left-container">
+                        <i class="fa fa-plus pull-left" style="margin-top:7px"></i>
+                      </span>{{items.ReasonType}} </p>
+                    <div class="children{{items.ReasonTypeID}} " style="display:none; margin-left:30px">
+                      <p class="color-bl"> Approve</p>
+                      <p class="color-bl"> Reject </p>
+                    </div>
+                  </td>
+                  <td class="td-table text-right">
+                    <p>{{items.Percentage}} </p>
+                    <div class="children{{items.ReasonTypeID}} " style="display:none; margin-left:30px">
+                      <p class="color-bl">{{items.ApprovePercent}}% </p>
+                      <p class="color-bl">{{items.RejectPercent}}% </p>
+                    </div>
+                  </td>
+                </tr>
+
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+  <br />
+  <!-- <div class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="x_panel tile fixed_height_320">
+        <div class="x_title">
+          <a routerLink="/main/request">
+            <h2 class="hover">Request
+              <small>{{groupRequestName}}</small>
+            </h2>
+          </a>
+          <ul class="nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                <i class="fa fa-object-group" title="Choose Group"></i>
+              </a>
+              <ul class="dropdown-menu" role="menu" *ngIf="group">
+                <li *ngFor="let items of group">
+                  <a (click)="chooseGroup(items.ID)">{{items.Name}}</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content" *ngIf="requestchart">
+          <div class="widget_summary">
+            <div class="w_left w_25">
+              <span>Total</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="requestchart[0]?.TotalRequest != 0  ? 100 : 0">
+                  {{requestchart[0]?.TotalRequest != 0 ? 100 : 0}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{requestchart[0]?.TotalRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          <div *ngIf="requestchart"></div>
+          <div class="widget_summary" *ngFor="let items of requestchart">
+            <div class="w_left w_25">
+              <span>{{items.StatusRequests}}</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="items.PercentStatusRequest">
+                  {{items.PercentStatusRequest}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{items.CountStatusRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="x_panel tile fixed_height_320">
+        <div class="x_title">
+          <a routerLink="/main/ot-request">
+            <h2 class="hover"> OT Request
+              <small>{{groupOTRequestName}}</small>
+            </h2>
+          </a>
+          <ul class="nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                <i class="fa fa-object-group" title="Choose Group"></i>
+              </a>
+              <ul class="dropdown-menu" role="menu" *ngIf="group">
+                <li *ngFor="let items of group">
+                  <a (click)="chooseGroupOTRequest(items.ID)">{{items.Name}}</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content" *ngIf="otrequestchart">
+          <div class="widget_summary">
+            <div class="w_left w_25">
+              <span>Total</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="otrequestchart[0]?.TotalOTRequest != 0  ? 100 : 0">
+                  {{otrequestchart[0]?.TotalOTRequest != 0 ? 100 : 0}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{otrequestchart[0].TotalOTRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          <div *ngIf="requestchart"></div>
+          <div class="widget_summary" *ngFor="let items of otrequestchart">
+            <div class="w_left w_25">
+              <span>{{items.StatusOTRequests}}</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="items.PercentStatusOTRequest">
+                  {{items.PercentStatusOTRequest}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{items.CountStatusOTRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="x_panel tile fixed_height_320">
+        <div class="x_title">
+          <a routerLink="/main/explanation">
+            <h2 class="hover"> Explained
+              <small>{{groupExRequestName}}</small>
+            </h2>
+          </a>
+          <ul class="nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                <i class="fa fa-object-group" title="Choose Group"></i>
+              </a>
+              <ul class="dropdown-menu" role="menu" *ngIf="group">
+                <li *ngFor="let items of group">
+                  <a (click)="chooseGroupExRequest(items.ID)">{{items.Name}}</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content" *ngIf="exrequestchart">
+          <div class="widget_summary">
+            <div class="w_left w_25">
+              <span>Total</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="exrequestchart[0].TotalExRequest != 0  ? 100 : 0">
+                  {{exrequestchart[0].TotalExRequest != 0 ? 100 : 0}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{exrequestchart[0].TotalExRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          <div *ngIf="requestchart"></div>
+          <div class="widget_summary" *ngFor="let items of exrequestchart">
+            <div class="w_left w_25">
+              <span>{{items.StatusExRequests}}</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="items.PercentStatusExRequest">
+                  {{items.PercentStatusExRequest}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{items.CountStatusExRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div> -->
+  <!-- /top tiles -->
+</div>
+
+
+<div *ngIf="isGroup && (role=='Member')">
+  <div class="row top_tiles">
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <a routerLink="/main/request/index">
+            <i class="fa fa-edit"></i>
+          </a>
+        </div>
+        <div class="count">{{totalRequest}}</div>
+        <h3>Personal Request</h3>
+      </div>
+    </div>
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <a routerLink="/main/ot-request/index">
+            <i class="fa fa-clock-o"></i>
+          </a>
+        </div>
+        <div class="count">{{totalOTRequest}}</div>
+        <h3>Personal OT Request</h3>
+      </div>
+    </div>
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <a routerLink="/main/explanation/index">
+            <i class="fa fa-file"></i>
+          </a>
+        </div>
+        <div class="count">{{totalExplanation}}</div>
+        <h3>Personal Explained</h3>
+      </div>
+    </div>
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <a (click)="ClickAbnormalFromDashBoard($event)">
+            <i class="fa fa-exclamation-circle"></i>
+          </a>
+        </div>
+        <div class="count">{{totalAbnormal}}</div>
+        <h3>Personal Not Explained</h3>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="x_panel tile fixed_height_320">
+        <div class="x_title">
+          <a routerLink="/main/request">
+            <h2 class="hover">Request</h2>
+            <div class="clearfix"></div>
+          </a>
+        </div>
+        <div class="x_content">
+          <div class="widget_summary" *ngFor="let items of requestchartMemberGroup">
+            <div class="w_left w_25">
+              <span>{{items.StatusRequests}}</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="items.PercentStatusRequest">
+                  {{items.PercentStatusRequest}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{items.CountStatusRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="x_panel tile fixed_height_320">
+        <div class="x_title">
+          <a routerLink="/main/ot-request">
+            <h2 class="hover">OT Request</h2>
+            <div class="clearfix"></div>
+          </a>
+        </div>
+        <div class="x_content">
+          <div class="widget_summary" *ngFor="let items of otrequestchartMemberGroup">
+            <div class="w_left w_25">
+              <span>{{items.StatusOTRequests}}</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="items.PercentStatusOTRequest">
+                  {{items.PercentStatusOTRequest}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{items.CountStatusOTRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="x_panel tile fixed_height_320">
+        <div class="x_title">
+          <a routerLink="/main/explanation">
+            <h2 class="hover">Explained</h2>
+            <div class="clearfix"></div>
+          </a>
+        </div>
+        <div class="x_content">
+          <div class="widget_summary" *ngFor="let items of exrequestchartMemberGroup">
+            <div class="w_left w_25">
+              <span>{{items.StatusExRequests}}</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="items.PercentStatusExRequest">
+                  {{items.PercentStatusExRequest}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{items.CountStatusExRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isGroup && (role=='GroupLead')">
+  <div class="row top_tiles">
+    <div class="animated flipInY col-lg-4 col-md-4 col-sm-6 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <a (click)="ClickRequestFromDashBoard($event)">
+            <i class="fa fa-edit"></i>
+          </a>
+        </div>
+        <div class="count">{{totalRequest}}</div>
+        <h3>Personal Request</h3>
+      </div>
+    </div>
+
+    <div class="animated flipInY col-lg-4 col-md-4 col-sm-6 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <a (click)="ClickExplanationFromDashBoard($event)">
+            <i class="fa fa-file"></i>
+          </a>
+        </div>
+        <div class="count">{{totalExplanation}}</div>
+        <h3>Personal Explained</h3>
+      </div>
+    </div>
+    <div class="animated flipInY col-lg-4 col-md-4 col-sm-6 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <a (click)="ClickAbnormalFromDashBoard($event)">
+            <i class="fa fa-exclamation-circle"></i>
+          </a>
+        </div>
+        <div class="count">{{totalAbnormal}}</div>
+        <h3>Personal Not Explained</h3>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="x_panel tile fixed_height_320">
+        <div class="x_title">
+          <a routerLink="/main/request">
+            <h2 class="hover">Request</h2>
+            <div class="clearfix"></div>
+          </a>
+        </div>
+        <div class="x_content">
+          <div class="widget_summary" *ngIf="requestchartMemberGroup">
+            <div class="w_left w_25">
+              <span>Total</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="requestchartMemberGroup[0].TotalRequest != 0 ? 100 : 0">
+                  {{requestchartMemberGroup[0].TotalRequest != 0 ? 100 : 0}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{requestchartMemberGroup[0].TotalRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          <div class="widget_summary" *ngFor="let items of requestchartMemberGroup">
+            <div class="w_left w_25">
+              <span>{{items.StatusRequests}}</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="items.PercentStatusRequest">
+                  {{items.PercentStatusRequest}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{items.CountStatusRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="x_panel tile fixed_height_320">
+        <div class="x_title">
+          <a routerLink="/main/ot-request">
+            <h2 class="hover">OT Request</h2>
+            <div class="clearfix"></div>
+          </a>
+        </div>
+        <div class="x_content">
+          <div class="widget_summary" *ngIf="otrequestchartMemberGroup">
+            <div class="w_left w_25">
+              <span>Total</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="otrequestchartMemberGroup[0].TotalOTRequest != 0 ? 100 : 0">
+                  {{otrequestchartMemberGroup[0].TotalOTRequest != 0 ? 100 : 0}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{otrequestchartMemberGroup[0].TotalOTRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          <div class="widget_summary" *ngFor="let items of otrequestchartMemberGroup">
+            <div class="w_left w_25">
+              <span>{{items.StatusOTRequests}}</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="items.PercentStatusOTRequest">
+                  {{items.PercentStatusOTRequest}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{items.CountStatusOTRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="x_panel tile fixed_height_320">
+        <div class="x_title">
+          <a routerLink="/main/explanation">
+            <h2 class="hover"> Explained</h2>
+            <div class="clearfix"></div>
+          </a>
+        </div>
+        <div class="x_content">
+          <div class="widget_summary" *ngIf="exrequestchartMemberGroup">
+            <div class="w_left w_25">
+              <span>Total</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="exrequestchartMemberGroup[0].TotalExRequest != 0 ? 100 : 0">
+                  {{exrequestchartMemberGroup[0].TotalExRequest!= 0 ? 100 : 0}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{exrequestchartMemberGroup[0].TotalExRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          <div class="widget_summary" *ngFor="let items of exrequestchartMemberGroup">
+            <div class="w_left w_25">
+              <span>{{items.StatusExRequests}}</span>
+            </div>
+            <div class="w_center w_55">
+              <div class="progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                  aria-valuemax="100" [style.width.%]="items.PercentStatusExRequest">
+                  {{items.PercentStatusExRequest}}%
+                </div>
+              </div>
+            </div>
+            <div class="w_right w_20">
+              <span>{{items.CountStatusExRequest}}</span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="row" *ngIf="!isGroup">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>Welcome TMS application</h2>
+        <ul class="nav navbar-right panel_toolbox">
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <h5 class="text-danger">Your Account is not in any group. Please contact with Admin to available for using TMS!</h5>
+      </div>
+    </div>
+  </div>
+</div>

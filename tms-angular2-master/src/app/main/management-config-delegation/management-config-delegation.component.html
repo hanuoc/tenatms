@@ -1,0 +1,156 @@
+<div class="page-title">
+  <div class="title_left">
+    <h3>Delegation Management
+      <small>Config Delegation</small>
+    </h3>
+  </div>
+  <div class="title_right">
+    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+      <div class="input-group">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="clearfix"></div>
+    <div class="x_panel">
+      <div class="row" >
+        <div class="form-group">
+          <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+            <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="FullNameDropdownTexts" [settings]="dropdownSearchFilterSettings"
+              [options]="FullNameOption" [(ngModel)]="FullNameFilter"></ss-multiselect-dropdown>
+          </div>
+          <div class="col-md-3 col-sm-12 col-xs-12 divfixbutton" >
+            <button title="Filter" type="button" class="btn btn-info btn-circle" (click)="filter()">
+              <i class="fa fa-filter"></i>
+            </button>
+            <button title="Reset" type="button" class="btn btn-primary btn-circle" (click)="reset()">
+              <i class="fa fa-undo"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="x_title">
+        <div class="clearfix"></div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table *ngIf="listUser && listUser.length > 0"
+          class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="pointer">
+                Full Name
+              </th>
+              <th>Account</th>
+              <th >
+                Delegate To
+              </th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of listUser">
+              <td>{{item.FullName}}</td>
+              <td>{{item.UserName}}</td>
+              <td>{{item.AssignName }}</td>
+              <td>{{item.StartDate  | date: 'dd/MM/yyyy'}}</td>
+              <td>{{item.EndDate  | date: 'dd/MM/yyyy'}}</td>
+              <td class="action-field">
+                <button class="remove-margin btn btn-success btn-xs" title="Delegate" 
+                (click)="showDelegate(item)">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <div *ngIf="listUser && listUser.length == 0" class="col-md-12">
+        <div class="alert alert-info">
+          <strong> Notification!</strong> No data found in system
+        </div>
+      </div>
+      <div *ngIf="listUser && listUser.length > 0" class="col-md-6">
+        <div [ngClass]="!loadsuccess ? 'newclass': ''">
+          <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+            [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+          <img *ngIf="!loadsuccess" class="image-loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+          />
+        </div>
+      </div>
+      <div *ngIf="listUser && listUser.length > 0 && totalRow > 1" class="col-md-6 showPage" style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+      </div>
+      <div *ngIf="listUser && totalRow == 1 " class="col-md-6 showPage" style="text-align: right">
+        <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal delegate-->
+<div bsModal #modalDelegate="bs-modal" class="modal fade modal-admin" id="testModal" style="display: none;" tabindex="-1"
+  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content delegate-modal">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Set Config Delegation</h4>
+        <button type="button" class="close pull-right" (click)="modalDelegate.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #delegateForm="ngForm" (ngSubmit)="saveDelegate(delegateForm.valid)">
+          <div class="form-group">
+            <label class="control-label col-md-4  col-sm-4 col-xs-12">Select delegate
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-7 col-sm-7 col-xs-12">
+              <ss-multiselect-dropdown required name="delegateUserId" [settings]="settingAngularSingleSearch" [texts]="textDelegatorRequest"
+                [options]="filterDelegator" #delegateUserId="ngModel" [(ngModel)]="myFilterDelegators"></ss-multiselect-dropdown>
+              <small [hidden]="myFilterDelegators.valid || (myFilterDelegators.pristine && !delegateForm.submitted)" class="text-danger">
+              </small>
+            </div>
+          </div>
+          <div class= "form-group">
+            <label class="control-label col-md-4  col-sm-4 col-xs-12">Start Date - End Date
+              <span class="colorRed">*</span>:</label>
+            <div class="col-md-7 col-sm-7 col-xs-12">
+              <div class="input-group" daterangepicker  [options]="daterangepickerOptions" (selected)="selectedAddRequestDatePicker($event, chosenRequestDate)">
+                <span class="form-control uneditable-input" name="entity.StartDate">
+                  {{ chosenRequestDate.start | date:'dd/MM/yy' }} - {{ chosenRequestDate.end| date:'dd/MM/yy' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+             
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-md-4  col-sm-4 col-xs-12">Full Name:</label>
+            <div class="col-md-7 col-sm-7 col-xs-12">
+              <input type="text" #fullname="ngModel" [(ngModel)]="delegation.FullName" required minlength="10" name="fullname" class="form-control"
+                disabled="disabled">
+            </div>
+          </div>
+
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="delegate-action-button">
+              <button type="submit" class="btn btn-success" [disabled]="!delegateForm.form.valid">Save</button>
+              <button type="button" class="btn btn-primary" [disabled] = "!this.isDisableResetButton" (click)="delete()">Reset</button>
+              <button type="button" class="btn btn-circle" (click)="closeForm(modalDelegate)">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

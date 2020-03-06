@@ -1,0 +1,74 @@
+<div class="page-title">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <h3>Profile
+          </h3>
+        </div>
+      </div>
+</div>
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_panel">
+        <div class="x_content">
+
+          <form class="form-horizontal" *ngIf="user" novalidate #addEditForm="ngForm" (ngSubmit)="saveData(addEditForm)">
+            <div class="form-group">
+              <label for="inputEmail3" class="control-label col-md-3 col-sm-3 col-xs-12">User Name:</label>
+              <div class="col-md-7 col-sm-7 col-xs-12">
+                <input type="text" class="form-control" id="usernameEdit" value="{{user.UserName}}" [disabled]="true">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputPassword3" class="control-label col-md-3 col-sm-3 col-xs-12">Group:</label>
+              <div class="col-md-7 col-sm-7 col-xs-12">
+                <input type="text" class="form-control" id="GroupEdit" value="{{user.Group?.Name}}" placeholder="" [disabled]="true">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputPassword3" class="control-label col-md-3 col-sm-3 col-xs-12">Full Name:</label>
+              <div class="col-md-7 col-sm-7 col-xs-12">
+                <input type="text" class="form-control" #fullname="ngModel" name="fullname" [(ngModel)]="user.FullName" minlength="3" maxlength="50"
+                  [disabled]="!isEdit">
+                  <small *ngIf="addEditForm.controls['fullname']?.hasError('minlength')" class="text-danger">
+                      Full Name length must be between 3 to 50 characters!
+                    </small>
+              </div>
+
+            </div>
+            <div class="form-group">
+              <label for="inputPassword3" class="control-label col-md-3 col-sm-3 col-xs-12">Email:</label>
+              <div class="col-md-7 col-sm-7 col-xs-12">
+                <input type=""  class="form-control" #email="ngModel" [(ngModel)]="user.Email" required pattern="^(?!.*(?:''|\.\.))[a-z][a-z0-9_\.]{3,29}[^\.]@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,2}$"
+                  maxlength="50" minlength="3" name="email" [disabled]="!isEdit">
+                  <small *ngIf="addEditForm.controls['email']?.hasError('minlength')" class="text-danger">
+                    Email length from 3 to 50 character!<br>
+                  </small>
+                  <small *ngIf="addEditForm.controls['email']?.hasError('pattern')" class="text-danger">
+                    Invalid email address. Email ID should be between 3 to 30 characters and followed by example@cmc.com.vn!
+                   </small>
+              </div>
+
+            </div>
+
+            <div class="ln_solid"></div>
+            <div class="form-group">
+              <label for="inputPassword3" class="control-label col-md-3 col-sm-3 col-xs-12"></label>
+              <div class="col-md-5 col-sm-5 col-xs-12">
+                <div class="row">
+                  <div class="col-md-2 col-sm-2 col-xs-12 btn-edit" *ngIf="!isEdit">
+                    <!-- <button type="button" (click)="showEdit()" class="btn btn-primary">Edit</button> -->
+                  </div>
+                  <div class="col-md-offset-5 col-sm-offset-5 col-xs-12 btn-edit-group" *ngIf="isEdit">
+                    <button type="submit" [disabled]="!addEditForm.form.valid" class="btn btn-success">Save</button>
+                    <button type="button" (click)="reset()" class="btn btn-warning">Reset</button>
+                    <button type="button" (click)="cancelEdit()" class="btn btn-default">Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>

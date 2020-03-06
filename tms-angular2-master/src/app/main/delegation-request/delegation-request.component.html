@@ -1,0 +1,253 @@
+<div class="page-title">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <h3>Delegation Management
+        <small>Delegation Assigned List</small>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="clearfix"></div>
+    <div class="x_panel">
+      <div>
+        <div class="row">
+          <div class="form-group">
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="UserDelegationDropdownTexts" [settings]="UserFiltersettings"
+                [options]="listDelegationUserOption" [(ngModel)]="usernameFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-2 col-sm-12 col-xs-12 divfixinput">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [texts]="StatusDropdownTexts" [settings]="StatusFilterSettings"
+                [options]="statusRequestOption" [(ngModel)]="statusRequestFilter"></ss-multiselect-dropdown>
+            </div>
+            <div class="col-md-3 col-sm-12 col-xs-12 divfixdatetimepicker">
+              <div class="input-group" daterangepicker [options]="daterangepickerOptions" (selected)="selectedDateRangePicker($event, chosenDate)">
+                <span class="form-control uneditable-input" name="daterange">
+                  {{ chosenDate.start | date:'dd/MM/y' }} - {{ chosenDate.end| date:'dd/MM/y' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-12 col-xs-12 divfixdelegationrequest">
+              <button type="button" class="btn btn-info btn-circle" title="Filter" (click)="filterRequestIsAssign()">
+                <i class="fa fa-filter"></i>
+              </button>
+              <button type="button" class="btn btn-primary btn-circle" title="Reset" (click)="reset()">
+                <i class="fa fa-undo"></i>
+              </button>
+              <button type="button" *ngIf="!isActived&&hasPermission('DELEGATION_LIST','readAllFixDelegate')" class="btn btn-success btn-circle btn-active-delegate"
+                title="Activate Delegation" (click)="ActiveDelegation()">
+                <i class="fa fa-check"></i>
+              </button>
+              <button type="button" *ngIf="isActived&&hasPermission('DELEGATION_LIST','readAllFixDelegate')" class="btn btn-danger btn-circle btn-active-delegate"
+                title="Deactivate Delegation" (click)="DeactiveDelegation()">
+                <i class="fa fa-times"></i>
+              </button>
+            </div>
+            <div>
+              
+            </div>
+          </div>
+        </div>
+        <div class="x_title">
+          <div class="clearfix"></div>
+        </div>
+        <div class="nav-tabs-custom">
+          <!-- <ul class="nav nav-pills">
+            <li class="colorTab1">
+              <a routerLink="/main/delegation-request" routerLinkActive="active">Request</a>
+            </li>
+            <li>
+              <a routerLink="/main/delegation-explanation-request" routerLinkActive="active">Explanation Request</a>
+            </li>
+          </ul> -->
+          <ul class="nav nav-tabs">
+              <li class="active"><a routerLink="/main/delegation-request"  routerLinkActive="active" aria-expanded="true">Request</a></li>
+              <li class=""><a  routerLink="/main/delegation-explanation-request"  routerLinkActive="active"x  aria-expanded="false">Explanation Request</a></li>
+          </ul>
+          <div class="clearfix"></div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table *ngIf="listDelegationRequest && listDelegationRequest.length > 0" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Full Name</th>
+                <th>Request Type</th>
+                <th>Reason Type</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Delegated By</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <thead>
+              <tbody>
+                <tr *ngFor="let items of listDelegationRequest">
+                  <td style=" cursor: pointer;">
+                    <a (click)="loadRequestDetail(items.ID)">{{items.Title}}</a>
+                  </td>
+                  <td>{{items.AppUser.FullName}}</td>
+                  <td>{{items.RequestType.Name}}</td>
+                  <td>{{items.EntitleDay != null ? items.EntitleDay.HolidayType : items.EntitleDay}}</td>
+                  <td>{{items.StartDate | date: 'dd/MM/yyyy'}}</td>
+                  <td>{{items.EndDate | date: 'dd/MM/yyyy'}}</td>
+                  <td>{{items.AppUserDelegate.FullName}}</td>
+                  <td>{{items.StatusRequest.Name}}</td>
+                  <td>
+                    <button class="remove-margin btn btn-primary btn-xs" data-placement="top" title="Approve" (click)="approveDelegationRequest(items,items.Title,items.AppUser)"
+                      *ngIf="_authenService.hasPermission('DELEGATION_LIST','cancel') && checkApprove(items)">
+                      <i class="fa fa-check" aria-hidden="true"></i>
+                    </button>
+                    <button class="remove-margin btn btn-danger btn-xs" data-placement="top" title="Reject" (click)="rejectDelegationRequest(items,items.Title,items.AppUser)"
+                      *ngIf="_authenService.hasPermission('DELEGATION_LIST','cancel') && checkReject(items)">
+                      <i class="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+          </table>
+        </div>
+        <div *ngIf="listDelegationRequest && listDelegationRequest.length == 0" class="col-md-12">
+          <div class="alert alert-info">
+            <strong>Notification!</strong> No data found in system
+          </div>
+        </div>
+        <div *ngIf="listDelegationRequest && listDelegationRequest.length > 0" class="col-md-6">
+          <pagination [boundaryLinks]="true" [maxSize]="pagingSize" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)" [totalItems]="totalRow"
+            [(ngModel)]="pageIndex" class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+        </div>
+        <div *ngIf="listDelegationRequest && listDelegationRequest.length > 0 && totalRow > 1" class="col-md-6" id="pageStyle" style="text-align: right">
+          <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entries</h5>
+        </div>
+        <div *ngIf="listDelegationRequest && totalRow == 1" class="col-md-6" id="pageStyle" style="text-align: right">
+          <h5>Showing {{(pageIndex - 1) * pageSize + 1}} to {{currentMaxEntries}} of {{totalRow}} entry</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal add and edit-->
+<div bsModal #modalAddEdit="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content ">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Delegate Request Detail</h4>
+        <button type="button" class="close pull-right" (click)="modalAddEdit.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div *ngIf="!hasPermission('DELEGATION_LIST','readAll')" class="modal-body">
+        <form class="form-horizontal form-label-left input_mask" novalidate #detailForm="ngForm" *ngIf="entity">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Title:</label>
+
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" disabled="disabled" value="{{entity.Title}}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Full Name:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.AppUser.FullName}}" disabled="disabled">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Group:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.AppUser.Group.Name}}" disabled="disabled">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Request Type:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.RequestType.Name}}" disabled="disabled">
+            </div>
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Reason Type:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <input class="form-control" value=" {{entity.EntitleDay?.HolidayType}}" disabled="disabled">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Detail Reason:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <textarea type="text" rows=3 maxlength="500" name="detailReason" class="form-control" disabled value="{{entity.DetailReason}}"></textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12 divfixtitle">Start Date-End Date:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <div class="input-group">
+                <span class="form-control uneditable-input" name="start-enddate" disabled="disabled">
+                  {{ chosenRequestDate.start | date:'dd/MM/yy' }} - {{ chosenRequestDate.end| date:'dd/MM/yy' }}
+                </span>
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default" disabled="disabled">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Created Date:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <div class="input-group">
+                <input class="form-control" value="{{entity.CreatedDate | date: 'dd/MM/yyyy'}}" disabled="disabled">
+                <!-- <span class="form-control uneditable-input" name="CreatedDate" disabled="disabled">
+                  {{ chosenDate.start | date:'dd/MM/yyyy' }}
+                </span> -->
+                <span class="input-group-btn">
+                  <a type="button" class="btn btn-default" disabled="disabled">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Status:</label>
+            <div class="col-md-10 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{entity.StatusRequest.Name}}" disabled="disabled">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Receiver:</label>
+            <!-- <div class="col-md-3 col-sm-9 col-xs-12">
+              <input class="form-control" value="{{this.groupLeadFilter?}}" disabled="disabled">
+            </div> -->
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <ss-multiselect-dropdown [ngModelOptions]="{standalone: true}" [disabled]="true" [settings]="settingAngularSingle" [options]="listGrantUser"
+                [(ngModel)]="groupLeadFilter"></ss-multiselect-dropdown>
+            </div>
+            <label class="control-label col-md-2 col-sm-3 col-xs-12">Approver/Rejecter:</label>
+            <div class="col-md-4 col-sm-9 col-xs-12">
+              <input class="form-control" value=" {{entity.AppUserAssign?.FullName}}" disabled="disabled">
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2">
+              <button *ngIf="_authenService.hasPermission('DELEGATION_LIST','cancel') && checkApprove(entity)" type="button" class="btn btn-primary"
+                (click)="approveDelegationRequest(entity,entity.Title,entity.AppUser)">Approve</button>
+              <button *ngIf="_authenService.hasPermission('DELEGATION_LIST','cancel') && checkReject(entity)" type="button" (click)="rejectDelegationRequest(entity,entity.Title,entity.AppUser)"
+                class="btn btn-danger">Reject</button>
+              <button type="button" (click)="modalAddEdit.hide()" class="btn btn-circle">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
